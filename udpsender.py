@@ -39,7 +39,7 @@ if len(sys.argv) < 3: #[self], ip address and port
 outgoingIp = sys.argv[1]
 outgoingPort = sys.argv[2]
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
 sock.settimeout(SOCKET_TIMEOUT)
 
 logger = logging.getLogger('updSenderLogger')
