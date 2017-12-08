@@ -17,6 +17,6 @@ while True:
     conn, addr = sock.accept()
     print('connected!')
     print('sending "hello world"...')
-    conn.send('hello world')
+    conn.send('hello world'.encode())
     conn.close()
     print('closing connecting...')
