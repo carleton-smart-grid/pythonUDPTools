@@ -10,7 +10,7 @@ SOCKET_RCV_BUFSIZE = 100   # socket buffer size for ack packet
 
 def verifyAck(ackMsg):
 	if (True):
-	    logger.info('Received a valid ack')
+	    logger.info('Received a valid ack : ' + ackMsg.decode())
 	    return True
 	else:
 	    logger.warning('Received an invalid ack')
@@ -18,7 +18,6 @@ def verifyAck(ackMsg):
 
 
 def sendPacketUntilAck(ipv6Address, port, msg):
-	sock.bind(('::', port, 0, socket.if_nametoindex('lowpan0')));
 	while (True):
 		sock.sendto(msg, (ipv6Address, port))  # send the packet
 		logmsg = 'Sending packet : ' + msg.decode()
@@ -50,6 +49,8 @@ logger.setLevel(logging.INFO)
 logger.info('Starting up')
 # logger.setLevel() - don't do this for now, we want to log everything
 
+sock.bind(('::', int(outgoingPort), 0, socket.if_nametoindex('lowpan0')));
+# Bind the socket to localhost and the outgoing port - done so that it binds to lowpan0
 
 while(True):
 	msg = input(">> ")
