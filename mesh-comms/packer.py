@@ -1,18 +1,5 @@
-##############################################################################
-#
-# Class:             packer.py
-# Author:            Jason Van Kerkhoven
-# Date of Update:    28/12/2017
-# Version:           0.1.0
-#
-# Purpose:           TODO
-#
-# Arguments:         N/A
-#
-# Flags:             N/A
-#
-##############################################################################
-
+# Jason Van Kerkhoven
+# 30/12/2017
 
 
 #import external libraries
@@ -113,9 +100,7 @@ def pack(xmlContents):
     byte += intToBits(negociateload, 3)
     byte += intToBits(greenenergy, 4)
     inf.extend((int('0b'+byte, 2),))
-
-
-    # return
+    
     return inf
 
 
