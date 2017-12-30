@@ -8,7 +8,7 @@ The purpose of adding an intermediate format...
      |                                                 |
      |                                                 |
      |                                                 |
-(INF format)                                     (INF format)
+(IMF format)                                     (IMF format)
      |                                                 |
      |                                                 |
      |                                                 |

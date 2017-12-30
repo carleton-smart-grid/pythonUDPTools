@@ -20,11 +20,11 @@ def intToBits(num, minLength):
 
 
 # pack data from XML
-# RETURNS a bytearray in IMF
+# RETURNS a bytearray in IMF format
 def pack(xmlContents):
-    # init xml root element and inf returnable
+    # init xml root element and imf returnable
     root = et.fromstring(xmlContents)
-    inf = bytearray()
+    imf = bytearray()
 
     # parse homeid, default 0
     homeid = root.find('./homeid')
@@ -34,8 +34,8 @@ def pack(xmlContents):
             homeid = 0
     else:
         homeid = 0
-    # add homid to inf
-    inf.extend((homeid,))
+    # add homid to imf
+    imf.extend((homeid,))
 
     # parse time, default 0
     time = root.find('./time')
@@ -44,8 +44,8 @@ def pack(xmlContents):
         time = (time.text) if time.text != None else 0
     else:
         time = 0;
-    # add time to inf TODO actually convert to UNIX stamp
-    inf.extend((0xde,0xad,0xbe,0xef))
+    # add time to imf TODO actually convert to UNIX stamp
+    imf.extend((0xde,0xad,0xbe,0xef))
 
     # parse current load, default 0
     currentload = root.find('./currentload')
@@ -54,7 +54,7 @@ def pack(xmlContents):
     else:
         currentload = 0.0
     # add currentload
-    inf.extend(floatToByteArr(currentload))
+    imf.extend(floatToByteArr(currentload))
 
     # parse forecast load, default 0
     forecastload = root.find('./forecastload')
@@ -63,7 +63,7 @@ def pack(xmlContents):
     else:
         forecastload = 0.0
     # add forecastload
-    inf.extend(floatToByteArr(forecastload))
+    imf.extend(floatToByteArr(forecastload))
 
     # parse negociate, default False
     negociate = root.find('./negociate')
@@ -99,9 +99,9 @@ def pack(xmlContents):
         byte += '0'
     byte += intToBits(negociateload, 3)
     byte += intToBits(greenenergy, 4)
-    inf.extend((int('0b'+byte, 2),))
-    
-    return inf
+    imf.extend((int('0b'+byte, 2),))
+
+    return imf
 
 
 
@@ -116,7 +116,7 @@ def unpack(packetContents):
 print('starting...')
 
 # test pack
-inf = pack('<usagedata><homeid>15</homeid><time>01-01-15 15:00</time><currentload>1.608475556</currentload><forecastload>2.5</forecastload><negociate>Yes</negociate><negociateload>7</negociateload><greenenergy>1</greenenergy></usagedata>')
-print([ "0x%02x" % b for b in inf ])
+imf = pack('<usagedata><homeid>15</homeid><time>01-01-15 15:00</time><currentload>1.608475556</currentload><forecastload>2.5</forecastload><negociate>Yes</negociate><negociateload>7</negociateload><greenenergy>1</greenenergy></usagedata>')
+print([ "0x%02x" % b for b in imf ])
 
 # test unpack
