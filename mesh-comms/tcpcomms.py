@@ -12,7 +12,7 @@ BUFFER = 1024
 TIMEOUT_SEC = 15
 
 
-# send a data string to destination, given as string
+# send a data string to destination, given as string OR bytearray
 # meant as a "one shot" transfer, socket setup/teardown internal
 def send(dest, data):
     try:
@@ -25,7 +25,9 @@ def send(dest, data):
 
         # send
         print('Sending data...')
-        sock.send(data.encode())
+        if (isinstance(data, str)):
+            data = data.encode()
+        sock.send(data)
         print('Data sent!')
     finally:
         sock.close()
