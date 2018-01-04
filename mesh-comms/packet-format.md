@@ -41,7 +41,7 @@ The **Intra-Mesh Format** (IMF) is solely used while data is traveling from sour
 
 Due to small packet sizes and the lossy nature of 6LoWPAN mesh networks, minimalization of packets is crucial. By removing all the overhead from the desired XML format, packet size can be shrunk significantly.
 
-It should be noted at all IEEE-754 Floats are encoded using the **litle endian** schema (ie. the *least* significant byte is given first).
+It should be noted at all words and double-words are encoded using the **litle endian** schema (ie. the *least* significant byte is given first).
 
 The structure of an INF formated packet is as follows:
 
