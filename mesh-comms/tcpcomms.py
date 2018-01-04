@@ -48,6 +48,13 @@ class Server:
         serverSocket = None
 
 
+    # generic destructor
+    def __del__(self):
+        print('Server shutdown...')
+        self.teardown()
+        serverSocket = None
+
+
     # setup server socket for regular comms
     def setup(self):
         # socket setup
@@ -81,7 +88,7 @@ class Server:
             payload = connection.recv(BUFFER)
             if (not payload):
                 break
-            print('Receieved', len(payload), 'Byte(s)')
+            print('Receieved', len(payload), 'Byte(s)...')
             data.extend(payload)
 
         # close current connection and return
