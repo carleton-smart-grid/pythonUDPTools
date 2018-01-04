@@ -1,5 +1,5 @@
 # Jason Van Kerkhoven
-# 03/01/2018
+# 04/01/2018
 
 
 # import external libraries
@@ -7,11 +7,11 @@ import xml.etree.ElementTree as et
 import struct
 import re
 import time
+from datetime import datetime as dt
 
 
 # declaring library constants
 YEAR_CONSTANT = '20'
-TIME_RE = '(\d+-\d+-\d+)\s+(\d+:\d+)'
 
 
 # convert float to 4B bytearray (LSB at 0)
@@ -46,14 +46,14 @@ def bytesToInt(bytes):
 # get bytearray as string of bytes
 # RETURNS string
 def printableByteArray(arr):
-    return [ "0x%02x" % byte for byte in arr ]
+    return str([ "0x%02x" % byte for byte in arr ])
 
 
 # pack data from XML
 # RETURNS a bytearray in IMF format
 def pack(xmlContents):
     # init xml root element and imf returnable
-    root = et.fromstring(xmlContents)
+    root = et.fromstring(xmlContents)               #BUG some issue with packing an XML generated from unpacking????
     imf = bytearray()
 
     # parse homeid, default 0
@@ -74,7 +74,7 @@ def pack(xmlContents):
     if (timestamp != None):
         timestamp = timestamp.text
         if (timestamp != None):
-            if (re.match(TIME_RE, timestamp)):
+            if (re.match('(\d+-\d+-\d+)\s+(\d+:\d+)', timestamp)):
                 #convert to unix stamp
                 dateTime = timestamp.split(' ')
                 dmy = dateTime[0].split('-')
@@ -156,7 +156,7 @@ def unpack(packetContents):
 
     # extract unix timestamp
     unixstamp = bytesToInt(packetContents[1:5])
-    timestamp = unixstamp # TODO convert stamp to stringtime
+    timestamp = (dt.fromtimestamp(unixstamp)).strftime('%d-%m-%y %H:%M')
     # update xml attribute
     xml += '<time>' + str(timestamp) + '</time>'
 
@@ -172,25 +172,36 @@ def unpack(packetContents):
 
     # extract negociate
     b = packetContents[13]
-    # TODO
+    negociate = 'Yes' if (((b & 0x80) >> 7) == 1) else 'No'
     # extract negociateload
-    # TODO
+    negociateload = (b & 0x70) >> 4
     # extract greenenergy
-    # TODO
+    greenenergy = (b & 0x0F)
+    # update xml attributes
+    xml += '<negociate>' + str(negociate) + '/<negociate>'
+    xml += '<negociateload>' + str(negociateload) + '</negociateload>'
+    xml += '<greenenergy>' + str(greenenergy) + '</greenenergy>'
 
     # terminate root and return
-    return (xml + '</usagedata>')
+    return str(xml + '</usagedata>')
+
 
 
 
 # tests
 ##########################################################################
-print('starting...')
+print('starting...\n')
+xml = '<usagedata><homeid>15</homeid><time>01-01-15 15:00</time><currentload>1.608475556</currentload><forecastload>2.5</forecastload><negociate>Yes</negociate><negociateload>7</negociateload><greenenergy>1</greenenergy></usagedata>'
+print(xml + '\n')
 
 # test pack
-imf = pack('<usagedata><homeid>15</homeid><time>01-01-15 15:00</time><currentload>1.608475556</currentload><forecastload>2.5</forecastload><negociate>Yes</negociate><negociateload>7</negociateload><greenenergy>1</greenenergy></usagedata>')
-print(printableByteArray(imf))
+imf = pack(xml)
+print(printableByteArray(imf) + '\n')
 
 # test unpack
 xml = unpack(imf)
-print(xml)
+print(xml + '\n')
+
+# test repacking
+imf = pack(xml)
+print(printableByteArray(imf) + '\n')
