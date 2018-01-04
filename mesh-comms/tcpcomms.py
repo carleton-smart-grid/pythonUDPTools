@@ -12,6 +12,8 @@ BUFFER = 1024
 TIMEOUT_SEC = 15
 
 
+
+
 # send a data string to destination, given as string OR bytearray
 # meant as a "one shot" transfer, socket setup/teardown internal
 def send(dest, data):

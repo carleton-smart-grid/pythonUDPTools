@@ -1,7 +1,6 @@
 # Jason Van Kerkhoven
 # 04/01/2018
 
-
 # import external libraries
 import xml.etree.ElementTree as et
 import struct
@@ -9,9 +8,10 @@ import re
 import time
 from datetime import datetime as dt
 
-
-# declaring library constants
+# declaring constants
 YEAR_CONSTANT = '20'
+
+
 
 
 # convert float to 4B bytearray (LSB at 0)
@@ -53,7 +53,7 @@ def printableByteArray(arr):
 # RETURNS a bytearray in IMF format
 def pack(xmlContents):
     # init xml root element and imf returnable
-    root = et.fromstring(xmlContents)               #BUG some issue with packing an XML generated from unpacking????
+    root = et.fromstring(xmlContents)
     imf = bytearray()
 
     # parse homeid, default 0
@@ -178,7 +178,7 @@ def unpack(packetContents):
     # extract greenenergy
     greenenergy = (b & 0x0F)
     # update xml attributes
-    xml += '<negociate>' + str(negociate) + '/<negociate>'
+    xml += '<negociate>' + str(negociate) + '</negociate>'
     xml += '<negociateload>' + str(negociateload) + '</negociateload>'
     xml += '<greenenergy>' + str(greenenergy) + '</greenenergy>'
 
@@ -188,7 +188,8 @@ def unpack(packetContents):
 
 
 
-# tests
+# debug
+'''
 ##########################################################################
 print('starting...\n')
 xml = '<usagedata><homeid>15</homeid><time>01-01-15 15:00</time><currentload>1.608475556</currentload><forecastload>2.5</forecastload><negociate>Yes</negociate><negociateload>7</negociateload><greenenergy>1</greenenergy></usagedata>'
@@ -205,3 +206,4 @@ print(xml + '\n')
 # test repacking
 imf = pack(xml)
 print(printableByteArray(imf) + '\n')
+'''
