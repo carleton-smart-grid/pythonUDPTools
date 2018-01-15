@@ -45,6 +45,5 @@ def receive():
         while(True):
             data, src = sock.recvfrom(BUFFER)
             print ('Receieved', '"'+data.decode('utf-8')+'"', 'from', src[0])
-            return src
     finally:
         sock.close()
