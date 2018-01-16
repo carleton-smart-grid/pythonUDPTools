@@ -1,7 +1,7 @@
 # Startup Scripts
 Each startup script initializes the appropriate *lowpan0* and *wpan0* devices.
 
-##startCA
+## startCA
 usage:
 
     sudo ./startCA.sh
@@ -11,7 +11,7 @@ the first DODAG advertised. At which time a valid IPv6 address (Prefix::Local-Li
 is assigned to the interface.
 
 
-##startTA
+## startTA
 usage:
 
     sudo ./startTA.sh
