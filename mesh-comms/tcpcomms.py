@@ -31,6 +31,9 @@ def send(dest, data):
             data = data.encode()
         sock.send(data)
         print('Data sent!')
+    except socket.timeout:
+        # Raises the timeout error to the ca.py scope
+        raise
     finally:
         sock.close()
         print('Socket closed!')
