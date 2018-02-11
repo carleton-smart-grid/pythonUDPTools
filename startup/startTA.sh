@@ -11,6 +11,6 @@ iwpan dev lowpan0 set pan_id 0xbeef #All devices must have the same pan_id
 ip link set wpan0 up
 ip link set lowpan0 up
 sh -c "echo 1 > /proc/sys/net/ipv6/conf/all/forwarding"
-ip address add dead:beef:dead:beef::1/64 dev lowpan0
+ip address add dead:beef::1/64 dev lowpan0
 #simpleRPL CLI is bound by this script to the execution directory
-sudo simpleRPL.py -vvvvv -R -d dead:beef:dead:beef::1 -p dead:beef:dead:beef:: -i lowpan0
+sudo simpleRPL.py -vvv -R -d dead:beef::1 -p dead:beef:: -i lowpan0
