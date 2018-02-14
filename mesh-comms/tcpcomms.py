@@ -20,7 +20,7 @@ def send(dest, data):
     try:
         # socket setup
         print('Establishing connection...')
-        scope_id = socket.AF_INET #socket.if_nametoindex('lowpan0')
+        scope_id = socket.if_nametoindex('lowpan0') #socket.AF_INET
         sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
         sock.settimeout(TIMEOUT_SEC)
         sock.connect((dest, PORT, 0, scope_id))
@@ -64,7 +64,7 @@ class Server:
     def setup(self):
         # socket setup
         print('Binding Socket on port', PORT, '...')
-        scope_id = socket.AF_INET #socket.if_nametoindex('lowpan0')
+        scope_id = socket.if_nametoindex('lowpan0') #socket.AF_INET
         self.serverSocket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
         self.serverSocket.bind((HOST, PORT, 0, scope_id))
         self.serverSocket.listen(1)
