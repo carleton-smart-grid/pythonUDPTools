@@ -14,7 +14,8 @@ All programs written operate on port 4907. Please ensure no other application is
     |
     ├── startup
     |   ├── startCA.sh
-    |   └── startTA.sh
+    |   ├── startTA.sh
+    |   └── README.md
     |
     ├── test-util
     |   └── udpping.py
@@ -34,6 +35,16 @@ The `test-util` directory contains any auxiliary code used to test the various p
 
 
 # Usage Instructions
+### startCA.sh
+Configuring the 6LoWPAN (as `lowpan0`) interface for a **CA**, and starting [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) is done trivially through: `sudo ./startCA.sh`.
+
+It should be noted that in order to use the [cliRPL.py](https://github.com/carleton-smart-grid/simpleRPL#getting-information-on-a-running-instance) tool to discern node information or to run administration functions, `./startCA.sh` should be run in the root directory of `simpleRPL` (ie the directory containing the files `cliRPL.py` and `simpleRPL.py`).
+
+### startTA.sh
+Configuring the 6LoWPAN (as `lowpan0`) interface for a **TA**, and starting [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) is done trivially through: `sudo ./startTA.sh`.
+
+It should be noted that in order to use the [cliRPL.py](https://github.com/carleton-smart-grid/simpleRPL#getting-information-on-a-running-instance) tool to discern node information or to run administration functions, `./startTA.sh` should be run in the root directory of `simpleRPL` (ie the directory containing the files `cliRPL.py` and `simpleRPL.py`).
+
 ### tcpcomms.py
 The server (receiver) should first instantiate a tcpcomms server object `server = tcpcomms.Server()`, which will bind to port 4905 by default. After which, calling `data = server.receive()` will block until a successful TCP transfer has completed, and store the resulting data in `data`. If the data received was packed into an IMF format, calling `data = packer.unpack(data)` will convert the data into XML format.
 

@@ -1,5 +1,0 @@
-#!/bin/bash
-
-ip link set wpan0 down &&
-ip link set lowpan0 down &&
-echo "wpan0 and lowpan0 have been turned down"
