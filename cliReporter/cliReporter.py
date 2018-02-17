@@ -26,11 +26,11 @@ def send(data, dest):
 
 
 def main():
-    # p = Popen("sudo cliRPL.py show-parent", shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    # p = Popen(["subl cliRPL.py", "show-parent"], shell=True, stdout=PIPE, stderr=PIPE)
     p = Popen(["ls | head", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
     parentOutput, stderr = p.communicate()
     print(parentOutput)
-    # p = Popen("sudo cliRPL.py show-current-dodag", shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    # p = Popen(["sudo cliRPL.py", "show-current-dodag"], shell=True, stdout=PIPE, stderr=PIPE)
     p = Popen(["ls | tail", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
     dodagOutput, stderr = p.communicate()
     print(dodagOutput)
