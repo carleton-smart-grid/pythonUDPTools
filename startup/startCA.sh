@@ -1,14 +1,8 @@
+
 #!/bin/bash
 
-if [ -z "$1" ]
-	then
-	IP="1"
-else
-	IP="$1"
-fi
-
 #ensure sudo
-kill -s KILL `pgrep ifplugd`
+
 ip link set wpan0 down
 ip link set lowpan0 down
 iwpan phy phy0 set channel 0 16 #Set the device to use page 0 and channel 16
@@ -17,6 +11,6 @@ iwpan dev wpan0 set pan_id 0xbeef #Cmd will echo usage
 iwpan dev lowpan0 set pan_id 0xbeef #All devices must have the same pan_id
 ip link set wpan0 up
 ip link set lowpan0 up
-sh -c "echo 1 > /proc/sys/net/ipv6/conf/all/forwarding" #maybe enable ipv6 multihop
-#ip address add 0000:0000:0000:0000:0000:0000:0000:"$IP"/64 dev lowpan0
-#ping6 -I lowpan0 ff02::1 #Global broadcast ping
+sh -c "echo 1 > /proc/sys/net/ipv6/conf/all/forwarding"
+#simpleRPL CLI is bound by this script to the execution directory
+sudo simpleRPL.py -vvvvv -i lowpan0
