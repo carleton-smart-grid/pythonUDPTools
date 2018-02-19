@@ -5,8 +5,6 @@ from subprocess import Popen, PIPE, STDOUT
 
 # declaring constants
 PORT = 34217
-DEST_IP = "127.0.0.1" #Replace with correct IP
-LOWPAN_IP = "dead:beef::1" #hardcoded because getting this in python is an absolute pain
 BUFFER = 1024
 
 
@@ -26,6 +24,16 @@ def send(data, dest):
 
 
 def main():
+    # check arguments
+    if (len(sys.argv) != 3):
+        print('ERROR: Unexpected argument amount - 2 expected')
+        print('       Please call with arguments: SELF_IPv6 DEST_IPv4')
+        sys.exit()
+
+    # save arguments
+    lowpanIP = sys.argv[1]
+    destIP = sys.argv[2]
+
     # p = Popen(["subl cliRPL.py", "show-parent"], shell=True, stdout=PIPE, stderr=PIPE)
     p = Popen(["ls | head", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
     parentOutput, stderr = p.communicate()
@@ -38,7 +46,7 @@ def main():
 
     data = "child1,1024,root,256\n"
 
-    send(data, DEST_IP)
+    send(data, destIP)
 
 
 if __name__ == "__main__":
