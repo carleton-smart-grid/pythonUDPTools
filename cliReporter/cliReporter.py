@@ -35,18 +35,19 @@ def main():
     lowpanIP = sys.argv[1]
     destIP = sys.argv[2]
 
-    p = Popen(["subl cliRPL.py", "show-parent"], shell=True, stdout=PIPE, stderr=PIPE)
-    # p = Popen(["ls | head", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
+    p = Popen(["sudo cliRPL.py list-parents"], shell=True, stdout=PIPE, stderr=PIPE)
     parentOutput, stderr = p.communicate()
-    parentRank = re.match("rank: (\d+)", parentOutput)
-    print(parentRank.group(1))
-    # p = Popen(["sudo cliRPL.py", "show-current-dodag"], shell=True, stdout=PIPE, stderr=PIPE)
-    p = Popen(["ls | tail", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
+    print(parentOutput)
+    parentRank = re.search(r'.*rank: (\d+).*', parentOutput).group(1)
+    print(parentRank)
+    parentIPSuffix = re.search(r'address: fe80::([\da-f:]*)$',parentOutput, flags=re.MULTILINE).group(1)
+    print(parentIPSuffix)
+    p = Popen(["sudo cliRPL.py show-current-dodag"], shell=True, stdout=PIPE, stderr=PIPE)
     dodagOutput, stderr = p.communicate()
-    print(dodagOutput)
+    myRank = re.search(r'Rank: (\d+)', dodagOutput).group(1)
     #do processing of the data
 
-    data = "child1,1024,root,256\n"
+    data = lowpanIP + "," + myRank + "," + parentIPSuffix + "," + parentRank
 
     send(data, destIP)
 
