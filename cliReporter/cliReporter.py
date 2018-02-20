@@ -2,6 +2,7 @@ import socket
 import sys
 import time
 from subprocess import Popen, PIPE, STDOUT
+import re
 
 # declaring constants
 PORT = 34217
@@ -34,10 +35,11 @@ def main():
     lowpanIP = sys.argv[1]
     destIP = sys.argv[2]
 
-    # p = Popen(["subl cliRPL.py", "show-parent"], shell=True, stdout=PIPE, stderr=PIPE)
-    p = Popen(["ls | head", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
+    p = Popen(["subl cliRPL.py", "show-parent"], shell=True, stdout=PIPE, stderr=PIPE)
+    # p = Popen(["ls | head", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
     parentOutput, stderr = p.communicate()
-    print(parentOutput)
+    parentRank = re.match("rank: (\d+)", parentOutput)
+    print(parentRank.group(1))
     # p = Popen(["sudo cliRPL.py", "show-current-dodag"], shell=True, stdout=PIPE, stderr=PIPE)
     p = Popen(["ls | tail", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
     dodagOutput, stderr = p.communicate()
