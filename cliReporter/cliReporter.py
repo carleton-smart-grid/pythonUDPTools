@@ -38,16 +38,30 @@ def main():
     p = Popen(["sudo cliRPL.py list-parents"], shell=True, stdout=PIPE, stderr=PIPE)
     parentOutput, stderr = p.communicate()
     print(parentOutput)
-    parentRank = re.search(r'.*rank: (\d+).*', parentOutput).group(1)
-    print(parentRank)
-    parentIPSuffix = re.search(r'address: fe80::([\da-f:]*)$',parentOutput, flags=re.MULTILINE).group(1)
+    parentRank = re.search(r'.*rank: (\d+).*', parentOutput)
+    if (parentRank is not None):
+        parentRank = parentRank.group(1)
+    else:
+        parentRank = None
+
+    # print(parentRank)
+    parentIPSuffix = re.search(r'address: fe80::([\da-f:]*)$',parentOutput, flags=re.MULTILINE)
+    if (parentIPSuffix is not None):
+        parentIPSuffix = parentIPSuffix.group(1)
+    else :
+        parentIPSuffix = None
+
     print(parentIPSuffix)
     p = Popen(["sudo cliRPL.py show-current-dodag"], shell=True, stdout=PIPE, stderr=PIPE)
     dodagOutput, stderr = p.communicate()
     myRank = re.search(r'Rank: (\d+)', dodagOutput).group(1)
     #do processing of the data
 
-    data = lowpanIP + "," + myRank + "," + parentIPSuffix + "," + parentRank
+    data = lowpanIP + "," + myRank
+    if ((parentIPSuffix is not None) and (parentRank is not None)):
+        data += "," + parentIPSuffix + "," + parentRank
+
+
 
     send(data, destIP)
 
