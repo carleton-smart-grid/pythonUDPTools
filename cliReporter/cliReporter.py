@@ -2,6 +2,7 @@ import socket
 import sys
 import time
 from subprocess import Popen, PIPE, STDOUT
+import re
 
 # declaring constants
 PORT = 34217
@@ -34,19 +35,38 @@ def main():
     lowpanIP = sys.argv[1]
     destIP = sys.argv[2]
 
-    # p = Popen(["subl cliRPL.py", "show-parent"], shell=True, stdout=PIPE, stderr=PIPE)
-    p = Popen(["ls | head", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
-    parentOutput, stderr = p.communicate()
-    print(parentOutput)
-    # p = Popen(["sudo cliRPL.py", "show-current-dodag"], shell=True, stdout=PIPE, stderr=PIPE)
-    p = Popen(["ls | tail", "-n", "1"], shell=True, stdout=PIPE, stderr=PIPE)
-    dodagOutput, stderr = p.communicate()
-    print(dodagOutput)
-    #do processing of the data
+    while(True):
+	    p = Popen(["sudo cliRPL.py list-parents"], shell=True, stdout=PIPE, stderr=PIPE)
+	    parentOutput, stderr = p.communicate()
+	    print(parentOutput)
+	    parentRank = re.search(r'.*rank: (\d+).*', parentOutput)
+	    if (parentRank is not None):
+	        parentRank = parentRank.group(1)
+	    else:
+	        parentRank = None
 
-    data = "child1,1024,root,256\n"
+	    # print(parentRank)
+	    parentIPSuffix = re.search(r'address: fe80::([\da-f:]*)$',parentOutput, flags=re.MULTILINE)
+	    if (parentIPSuffix is not None):
+	        parentIPSuffix = parentIPSuffix.group(1)
+	    else :
+	        parentIPSuffix = None
 
-    send(data, destIP)
+	    print(parentIPSuffix)
+	    p = Popen(["sudo cliRPL.py show-current-dodag"], shell=True, stdout=PIPE, stderr=PIPE)
+	    dodagOutput, stderr = p.communicate()
+	    myRank = re.search(r'Rank: (\d+)', dodagOutput).group(1)
+	    #do processing of the data
+
+	    data = lowpanIP + "," + myRank
+	    if ((parentIPSuffix is not None) and (parentRank is not None)):
+	        data += "," + parentIPSuffix + "," + parentRank
+
+
+
+	    send(data, destIP)
+
+	    time.sleep(1)
 
 
 if __name__ == "__main__":
