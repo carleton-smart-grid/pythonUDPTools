@@ -36,7 +36,7 @@ def main():
     destIP = sys.argv[2]
 
     while(True):
-	    p = Popen(["sudo cliRPL.py list-parents"], shell=True, stdout=PIPE, stderr=PIPE)
+	    p = Popen(["sudo cliRPL.py show-dao-parent"], shell=True, stdout=PIPE, stderr=PIPE)
 	    parentOutput, stderr = p.communicate()
 	    print(parentOutput)
 	    parentRank = re.search(r'.*rank: (\d+).*', parentOutput)
