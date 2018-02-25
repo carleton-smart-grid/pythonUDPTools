@@ -20,7 +20,7 @@ def send(dest, data):
     try:
         # socket setup
         print('Establishing connection...')
-        scope_id = socket.if_nametoindex('lowpan0') #socket.AF_INET
+        scope_id = socket.if_nametoindex('en0') #socket.AF_INET
         sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
         sock.settimeout(TIMEOUT_SEC)
         sock.connect((dest, PORT, 0, scope_id))
@@ -31,7 +31,8 @@ def send(dest, data):
             data = data.encode()
         sock.send(data)
         print('Data sent!')
-    except socket.timeout:
+    # catches all socket errors
+    except socket.error:
         # Raises the timeout error to the ca.py scope
         raise
     finally:
