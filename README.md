@@ -33,6 +33,17 @@ The `startup` directory contains scripts used to configure the LoWPAN radios and
 The `test-util` directory contains any auxiliary code used to test the various parameters of the mesh network.
 
 
+### Directory: cliReporter
+This contains the CLI reporter python script which reports the status of a 6LoWPAN RPL node to a [lowpan-visualizer](https://github.com/carleton-smart-grid/lowpan-visualizer)
+
+This script should be run from a pi that already has RPL running, from a [startxA script](#startCA.sh) preferably.
+
+This script shoul be run with the current directory being the directory that RPL was started in - it contains the sockets that are required to access the RPL data
+
+    sudo python [full path]/cliReporter/cliReporter.py [prefix] [host_ip]
+
+Where `prefix` is everything after the `fe80::` on the `lowpan0` interface and `host_ip` is the IP of the server running the visualizer
+
 
 # Usage Instructions
 ### startCA.sh
