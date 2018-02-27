@@ -10,6 +10,7 @@ from datetime import datetime as dt
 
 # declaring constants
 YEAR_CONSTANT = '20'
+IMF_PACKET_LENGTH = 14
 
 
 
@@ -145,9 +146,22 @@ def pack(xmlContents):
 
 # unpack data into XML
 # RETURNS a XML-esque UTF-8 character string
+# This function throws exceptions (indexException and etree.ElementTree.ParseError)
 def unpack(packetContents):
+
+
+    if len(packetContents) > IMF_PACKET_LENGTH : #It's longer than expected - check if it's an XML
+        try:
+            et.fromstring(packetContents) #We can just try it here, if it fails it will throw the error which we're allowed to do
+        except et.ParseError :
+            raise Exception('Packet is not a valid XML format')
+        print('Received an XML, refusing to unpack again, take it back')
+        return packetContents
+
+
     #start xml
     xml = '<usagedata>'
+
 
     # extract homeid
     homeid = int(packetContents[0])

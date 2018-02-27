@@ -72,7 +72,11 @@ curser = connection.cursor()
 while(True):
     # receive and unpack data
     data = server.receive()
-    data = packer.unpack(data)
+    try:
+    	data = packer.unpack(data)
+    except Exception as err:
+    	print('IMF unpack error: ', err)
+    	continue
 
     #save to SQLite3 server
     write(data, curser, connection)
