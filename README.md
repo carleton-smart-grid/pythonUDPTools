@@ -63,3 +63,15 @@ The client (sender) should first define the data to be sent (either as a byte ar
 
 ### udpping.py
 TODO
+
+### Packer.py
+Packer.py is a library for packing and unpacking XML to IMF and vice versa. It contains two main functions
+
+#### pack
+`pack` takes an XML file for usage data as input and outputs a bytearray in IMF format
+
+
+#### unpack
+`unpack` takes a usage data file as input and outputs a usage data XML file. If an XML file is input, it will simply return it
+
+_**Unpack may throw exceptions**_
