@@ -24,21 +24,33 @@ DEFAULT_DB_PATH = 'dat/power-usages.db'
 
 # save xml data to database
 def write(xml, curser, connection):
-    #open XML file and get timestamp
+    # open XML file and get timestamp
     root = et.fromstring(xml)
     timestamp = root.find('./time').text
 
-    #save info to db
-    load = root.find('./currentload').text
+    # parse info out
     houseID = root.find('./homeid').text
+    load = root.find('./currentload').text
+    forecast = root.find('forecastload').text
+    negociate = '1' if root.find('negociate').text.lower() in ('yes', 'true', 'enabled') else '0'
+    negociateLoad = root.find('negociateload').text
+    greenEnergy = root.find('greenenergy').text
 
-    #parse date-time into correct format TODO use regular expression matching instead
+    # parse date-time into correct format TODO use regular expression matching instead
     dateTime = timestamp.split(' ')
     dmy = dateTime[0].split('-')
     dateFormated = YEAR_CONSTANT + dmy[2] + '-' + dmy[1] + '-' + dmy[0]
 
-    #insert to db
-    insert = "INSERT INTO usages values(date('" + dateFormated + "'),time('" + dateTime[1] + "')," + houseID + "," + load + ")"
+    # generate sql and isert int database
+    insert = ("INSERT INTO usages values("
+              "DATE('" + dateFormated + "'), "
+              "TIME('" + dateTime[1] + "'), "
+              "" + houseID + ", "
+              "" + load + ", "
+              "" + forecast + ", "
+              "" + negociate + ", "
+              "" + negociateLoad + ", "
+              "" + greenEnergy + ")")
     print(insert)
     curser.execute(insert)
     connection.commit()
