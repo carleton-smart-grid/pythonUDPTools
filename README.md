@@ -34,9 +34,9 @@ The `test-util` directory contains any auxiliary code used to test the various p
 
 
 ### Directory: cliReporter
-This contains the CLI reporter python script which reports the status of a 6LoWPAN RPL node to a [lowpan-visualizer](https://github.com/carleton-smart-grid/lowpan-visualizer)
+This contains the CLI reporter python script which reports the status of a 6LoWPAN RPL node to a [lowpan-visualizer](https://github.com/carleton-smart-grid/lowpan-visualiser)
 
-This script should be run from a pi that already has RPL running, from a [startxA script](#startCA.sh) preferably.
+This script should be run from a pi that already has RPL running, from a startxA script preferably.
 
 This script shoul be run with the current directory being the directory that RPL was started in - it contains the sockets that are required to access the RPL data
 
