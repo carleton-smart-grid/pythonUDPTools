@@ -82,8 +82,6 @@ def pack(xmlContents):
                 dateFormated = YEAR_CONSTANT + dmy[2] + '-' + dmy[1] + '-' + dmy[0]
                 unixstamp = int(time.mktime(time.strptime(dateFormated+' '+dateTime[1], '%Y-%m-%d %H:%M')))
                 unixstamp = unixstamp.to_bytes(4, byteorder='little')
-
-    # add time to imf TODO actually convert to UNIX stamp
     imf.extend(unixstamp)
 
     # parse current load, default 0
@@ -144,60 +142,60 @@ def pack(xmlContents):
 
 
 
-# unpack data into XML
+# unpack IMF formated data into XML format
 # RETURNS a XML-esque UTF-8 character string
-# This function throws exceptions (indexException and etree.ElementTree.ParseError)
+# This function throws exceptions: indexException, etree.ElementTree.ParseError
 def unpack(packetContents):
-
-
-    if len(packetContents) > IMF_PACKET_LENGTH : #It's longer than expected - check if it's an XML
-        try:
-            et.fromstring(packetContents) #We can just try it here, if it fails it will throw the error which we're allowed to do
+    # check if contents match expected IMF length
+    if len(packetContents) != IMF_PACKET_LENGTH:
+        # check if contents are valid XML
+        try:  
+            et.fromstring(packetContents)
         except et.ParseError :
             raise Exception('Packet is not a valid XML format')
+            
+        # contents are already unpacked, return
         print('Received an XML, refusing to unpack again, take it back')
         return packetContents
+    else:
+        #start xml
+        xml = '<usagedata>'
 
+        # extract homeid
+        homeid = int(packetContents[0])
+        # update xml attribute
+        xml += '<homeid>' + str(homeid) + '</homeid>'
 
-    #start xml
-    xml = '<usagedata>'
+        # extract unix timestamp
+        unixstamp = bytesToInt(packetContents[1:5])
+        timestamp = (dt.fromtimestamp(unixstamp)).strftime('%d-%m-%y %H:%M')
+        # update xml attribute
+        xml += '<time>' + str(timestamp) + '</time>'
 
+        # extract currentload
+        currentload = bytesToFloat(packetContents[5:9])
+        # update xml attribute
+        xml += '<currentload>' + str(currentload) + '</currentload>'
 
-    # extract homeid
-    homeid = int(packetContents[0])
-    # update xml attribute
-    xml += '<homeid>' + str(homeid) + '</homeid>'
+        # extract forecastload
+        forecastload = bytesToFloat(packetContents[9:13])
+        # update xml attribute
+        xml += '<forecastload>' + str(forecastload) + '</forecastload>'
 
-    # extract unix timestamp
-    unixstamp = bytesToInt(packetContents[1:5])
-    timestamp = (dt.fromtimestamp(unixstamp)).strftime('%d-%m-%y %H:%M')
-    # update xml attribute
-    xml += '<time>' + str(timestamp) + '</time>'
+        # extract negociate
+        b = packetContents[13]
+        negociate = 'Yes' if (((b & 0x80) >> 7) == 1) else 'No'
+        # extract negociateload
+        negociateload = (b & 0x70) >> 4
+        # extract greenenergy
+        greenenergy = (b & 0x0F)
+        # update xml attributes
+        xml += '<negociate>' + str(negociate) + '</negociate>'
+        xml += '<negociateload>' + str(negociateload) + '</negociateload>'
+        xml += '<greenenergy>' + str(greenenergy) + '</greenenergy>'
 
-    # extract currentload
-    currentload = bytesToFloat(packetContents[5:9])
-    # update xml attribute
-    xml += '<currentload>' + str(currentload) + '</currentload>'
-
-    # extract forecastload
-    forecastload = bytesToFloat(packetContents[9:13])
-    # update xml attribute
-    xml += '<forecastload>' + str(forecastload) + '</forecastload>'
-
-    # extract negociate
-    b = packetContents[13]
-    negociate = 'Yes' if (((b & 0x80) >> 7) == 1) else 'No'
-    # extract negociateload
-    negociateload = (b & 0x70) >> 4
-    # extract greenenergy
-    greenenergy = (b & 0x0F)
-    # update xml attributes
-    xml += '<negociate>' + str(negociate) + '</negociate>'
-    xml += '<negociateload>' + str(negociateload) + '</negociateload>'
-    xml += '<greenenergy>' + str(greenenergy) + '</greenenergy>'
-
-    # terminate root and return
-    return str(xml + '</usagedata>')
+        # terminate root and return
+        return str(xml + '</usagedata>')
 
 
 
