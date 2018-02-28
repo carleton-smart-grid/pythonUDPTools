@@ -35,9 +35,9 @@ The `startup` directory contains scripts used to configure the LoWPAN radios and
 ### Directory: test-util
 The `test-util` directory contains any auxiliary code used to test the various parameters of the mesh network.
 
-
 ### Directory: cliReporter
 This contains the CLI reporter python script which reports the status of a 6LoWPAN RPL node to a [lowpan-visualizer](https://github.com/carleton-smart-grid/lowpan-visualizer) via WiFi connection.
+
 
 
 # Usage Instructions
