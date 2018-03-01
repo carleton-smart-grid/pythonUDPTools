@@ -18,14 +18,15 @@ import time
 
 # Declaring default flag values
 verbose = False
-transPeriod = 15*60
+transPeriod = 15*60 #15 Minutes
 retrans = 5
 pack = False
+homeId = 1
 
 stack = []
 
 # Declaring Constants
-TA_IP = 'dead:beef::1'
+taIP = 'dead:beef::1'
 
 
 # Defining Functions
@@ -44,7 +45,7 @@ def generateData():
     timeStamp = datetime.now().strftime('%d-%m-%y %H:%M')
 
     # Build XML
-    xml = '<usagedata><homeid>1</homeid><time>{}</time>'.format(timeStamp)
+    xml = '<usagedata><homeid>{}</homeid><time>{}</time>'.format(homeId,timeStamp)
     # PyFormat allows for the adjustment of float precision e.g. {:10.9f}
     # rn.uniform() returns an IEEE-754 53-bit float
     xml += '<currentload>{}</currentload>'.format(rn.uniform(currentLoad.lower,currentLoad.upper))
@@ -58,7 +59,7 @@ def transmit(data):
     for attempt in range(0,retrans):
         try:
             printv('Attempt {}'.format(attempt))
-            tcpcomms.send(TA_IP, data)
+            tcpcomms.send(taIP, data)
 
             # Returns if TCP is successful
             return True
@@ -97,12 +98,19 @@ if __name__ == '__main__':
             pack = True
 
         elif flag == '-a':
-            TA_IP = flags.pop(0)
+            taIP = flags.pop(0)
+
+        elif flag == '-h':
+            homeId = int(flags.pop(0))
 
     printv('Details:')
+    printv('\t{:30} {}'.format('TA IP address',taIP))
+    printv('\t{:30} {}'.format('Home ID',homeId))
     printv('\t{:30} {} seconds'.format('Retransmission Period',transPeriod))
     printv('\t{:30} {}'.format('Retransmission attempts',retrans))
     printv('\t{:30} {}\n'.format('XML to IMF compression',pack))
+
+
 
     # Main Loop logic
     while True:

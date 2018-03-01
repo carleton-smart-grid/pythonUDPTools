@@ -39,5 +39,21 @@ The server (receiver) should first instantiate a tcpcomms server object `server 
 
 The client (sender) should first define the data to be sent (either as a byte array or string) in a variable `data`. If the data is encoded as a valid XML, it can be converted into IMF format by calling `data = packer.pack(data)`. Then to send the data the method `tcpcomms.send('dead:beef::1', data)` should be called, in which *dead:beef::1* is the destination address.
 
+### ca.py
+Provides a runnable **CA stub** that generates a pseudorandom _currentload_ and _forecastload_ which is subsequently sent via the `tcpcomms.py` library to the TA.
+
+| CLI parameters | Description |
+| --- | --- |
+| `-c` | Enables XML to IMF compression |
+| `-v`| Enable verbose mode |
+| `-t [n]` | Sends usage data every _n_ seconds |
+| `-r [k]` | Attempts _k_ retransmissions |
+| `-a [ta_ip]` | Defines target TA IPv6 address |
+| `-h [j]` | Specifies the spoofed _Home ID_ |
+
+General Usage:
+`sudo python3 ca.py -v -c -h 1 -r 5 -t 10 -a dead:beef::1`
+
+
 ### udpping.py
 TODO
