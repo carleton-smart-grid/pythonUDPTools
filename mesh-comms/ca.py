@@ -4,9 +4,11 @@
 
 # Importing libraries
 import tcpcomms
-import random
+import random as rn
 import packer
 import sys
+import collections
+from datetime import datetime
 
 # Scheduling elements
 # Attempted to use without success APscheduler
@@ -32,21 +34,30 @@ def printv(string):
     if verbose:
         print(string)
 
-#TODO Spoof data with time incrementation and realistic loads
-def getData():
-    xml = ( '<usagedata><homeid>15</homeid><time>01-01-15 15:00</time>'
-            '<currentload>1.608475556</currentload>'
-            '<forecastload>2.5</forecastload><negociate>Yes</negociate>'
-            '<negociateload>7</negociateload>'
-            '<greenenergy>1</greenenergy></usagedata>'
-          )
+def generateData():
+    # Rand range defined in named tuples
+    Limit = collections.namedtuple('Limit', 'lower upper')
+    currentLoad = Limit(0,5)
+    forecastLoad = Limit(0,5)
+
+    # Formatting current time to match the provided H.E.M.S. XML
+    timeStamp = datetime.now().strftime('%d-%m-%y %H:%M')
+
+    # Build XML
+    xml = '<usagedata><homeid>1</homeid><time>{}</time>'.format(timeStamp)
+    # PyFormat allows for the adjustment of float precision e.g. {:10.9f}
+    # rn.uniform() returns an IEEE-754 53-bit float
+    xml += '<currentload>{}</currentload>'.format(rn.uniform(currentLoad.lower,currentLoad.upper))
+    xml += '<forecastload>{}</forecastload>'.format(rn.uniform(forecastLoad.lower,forecastLoad.upper))
+    # The below fields are irrelevant so they remain static
+    xml += '<negociate>Yes</negociate><negociateload>7</negociateload><greenenergy>1</greenenergy></usagedata>'
     return xml;
 
 def transmit(data):
     # TCP retransmission
     for attempt in range(0,retrans):
         try:
-            printv(attempt)
+            printv('Attempt {}'.format(attempt))
             tcpcomms.send(TA_IP, data)
 
             # Returns if TCP is successful
@@ -57,6 +68,7 @@ def transmit(data):
             print(e)
 
     # Occurs given TCP transmission failure
+    printv('\nTransmission Failed!\nAppending data to the stack for future retranmission\n')
     stack.append(data)
     return False
 
@@ -64,29 +76,36 @@ def transmit(data):
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
     # Handle user input from CLI
-    flags = sys.argv
-    print(flags)
-    del flags[0]
-    print(flags)
+    flags = sys.argv[1:]
+
     while (len(flags) > 0):
         flag = flags.pop(0)
         # Verbose flag
         if flag == '-v':
             verbose = True
+
         # Set transmission period
         elif flag == '-t':
-            transPeriod = int(flags.pop(0))*60 #convert to seconds
+            transPeriod = int(flags.pop(0))#*60 #convert to seconds
+
         # Set the number of retranmissions
         elif flag == '-r':
             retrans = int(flags.pop(0))
+
         # Set compression flag
         elif flag == '-c':
+
             pack = True
+
+    printv('Details:')
+    printv('\t{:30} {} seconds'.format('Retransmission Period',transPeriod))
+    printv('\t{:30} {}'.format('Retransmission attempts',retrans))
+    printv('\t{:30} {}\n'.format('XML to IMF compression',pack))
 
     # Main Loop logic
     while True:
         startTime = time.time()
-        data = getData()
+        data = generateData()
 
         # XML -> IMF
         if(pack):
@@ -99,4 +118,5 @@ if __name__ == '__main__':
 
         # Sleep the process for the transmission period
         # Corrects clock drift due to execution and retransmission time
+        # Utilizes Unix Epoch Time
         time.sleep(transPeriod - ((time.time() - startTime)% transPeriod))
