@@ -114,6 +114,7 @@ if __name__ == '__main__':
         # Transmits the data and empties the stack
         if transmit(data) and stack:
             for item in stack:
+                printv('Transmitting a previous entry from the stack...')
                 transmit(stack.pop())
 
         # Sleep the process for the transmission period
