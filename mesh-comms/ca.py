@@ -94,8 +94,10 @@ if __name__ == '__main__':
 
         # Set compression flag
         elif flag == '-c':
-
             pack = True
+
+        elif flag == '-a':
+            TA_IP = flags.pop(0)
 
     printv('Details:')
     printv('\t{:30} {} seconds'.format('Retransmission Period',transPeriod))
