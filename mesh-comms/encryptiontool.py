@@ -1,9 +1,9 @@
-import rsatools.py
-import aestools.py
+import rsatools
+import aestools
 
 # A simple class that contains a list of tuples that contain
 # a CA's IP and itt's current AES key
-# It also does decryption work through both AES and RSA tools. 
+# It also does decryption work through both AES and RSA tools.
 class SecurityTool:
 
     def _init_(self):

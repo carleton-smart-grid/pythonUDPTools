@@ -8,8 +8,8 @@ import random as rn
 import packer
 import sys
 import collections
-import rsatools.py
-import aestools.py
+import rsatools
+import aestools
 from datetime import datetime
 
 # Scheduling elements
