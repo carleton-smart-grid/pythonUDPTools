@@ -1,5 +1,6 @@
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+from Crypto.Random import get_random_bytes
 
 #This is all a very basic implementation of RSA,
 #Further work can be done to make it better
@@ -39,10 +40,11 @@ def decryptRSA( dat):
 
 #must have already generated keys to use the test.
 def simpleTestRSA():
-    data = b'Please end my suffering'
+    data = b'1234567890123456'
     encryptedData = encryptRSA(data)
+    print( len(encryptedData))
     decryptedData = decryptRSA(encryptedData)
     if(data == decryptedData):
         print ('It works')
     else:
-        print ('it is fucked')
+        print ('We are doomed')
