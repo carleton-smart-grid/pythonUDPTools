@@ -5,13 +5,15 @@ from Crypto.Random import get_random_bytes
 #This is all a very basic implementation of RSA,
 #Further work can be done to make it better
 #Namely signing with the private key of the sender to authenticate it.
-#Also should add passwords to the key file, but fuck that for now.
+#Also currently using absolute paths to what is effectively a random directory.
+KEY_PATH = '/home/pi/SmartGrid/key.bin'
+PUBLIC_KEY_PATH = '/home/pi/SmartGrid/publickey.bin'
 
 #Generate a pair of public and private keys saving them in the appropriate file
 def generateRSAKeys ():
     key = RSA.generate(2048)
-    f = open('key.bin', 'wb')
-    fpub = open('publickey.bin', 'wb')
+    f = open(KEY_PATH, 'wb')
+    fpub = open(PUBLIC_KEY_PATH, 'wb')
     fpub.write(key.publickey().exportKey('PEM'))
     f.write(key.exportKey('PEM'))
     f.close()
@@ -22,7 +24,7 @@ def generateRSAKeys ():
 #private key is not currently used to authenticate data
 def encryptRSA( dat):
 
-    keyString = open('publickey.bin', 'rb').read()
+    keyString = open(PUBLIC_KEY_PATH, 'rb').read()
     key = RSA.import_key(keyString)
     cipher = PKCS1_OAEP.new(key)
     encryptedData = cipher.encrypt(dat)
@@ -32,7 +34,7 @@ def encryptRSA( dat):
 #Public key authentication is not currently written
 def decryptRSA( dat):
 
-    keyString = open('key.bin', 'rb').read()
+    keyString = open(KEY_PATH, 'rb').read()
     key = RSA.importKey(keyString)
     cipher = PKCS1_OAEP.new(key)
     unencryptedData = cipher.decrypt(dat)

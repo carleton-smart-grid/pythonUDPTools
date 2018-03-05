@@ -133,7 +133,7 @@ if __name__ == '__main__':
         # XML -> IMF
         if(pack):
             data = packer.pack(data)
-            data = aestools.encryptAES(currentKey)
+            data = aestools.encryptAES(data, currentKey)
 
         # Transmits the data and empties the stack
         if transmit(data) and stack:

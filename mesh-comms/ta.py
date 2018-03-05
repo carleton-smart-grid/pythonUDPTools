@@ -91,7 +91,7 @@ while(True):
     # receive and unpack data
     packet = server.receive()
     #if the packet is an RSA encrypted AES key
-    if(len(packet[0]) == RSA_PACKET)):
+    if(len(packet[0]) == RSA_PACKET):
         tool.addAesKey(packet)
     elif(len(packet[0]) == VALID_PACKET):
         #decrypt the data and attempt to unpack it

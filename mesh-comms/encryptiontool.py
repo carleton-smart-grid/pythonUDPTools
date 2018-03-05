@@ -18,7 +18,7 @@ class SecurityTool:
         #iterate through the current list of CA IP AES key pairs
         #Compares the IPs, if it matches replaces the old pair with the new pair
         for i in listOfConsumerAgents:
-            if(packet[1]==listOfConsumerAgents[i][1])
+            if(packet[1]==listOfConsumerAgents[i][1]):
                 listOfConsumerAgents[i] = (key, packet[1])
                 return
 
@@ -29,7 +29,7 @@ class SecurityTool:
     def decryptAESData(packet):
 
         for i in listOfConsumerAgents:
-            if(packet[1]==listOfConsumerAgents[i][1])
+            if(packet[1]==listOfConsumerAgents[i][1]):
 
                 #decrypt the packet using AES, passing it the encrypted data and current key
                 data = aestools.decryptAES(packet[0], listOfConsumerAgents[0])
