@@ -14,6 +14,8 @@ import packer
 
 # declaring constants
 YEAR_CONSTANT = '20'
+RSA_PACKET = 256
+VALID_PACKET = 16
 DEFAULT_DB_PATH = 'dat/power-usages.db'
 
 
@@ -80,15 +82,24 @@ server = tcpcomms.Server()
 connection = sqlite3.connect(dbPath)
 curser = connection.cursor()
 
+#instantiate security tool object
+tool = securityTools.SecurityTool()
+
 # receive-unpack-write loop
 while(True):
     # receive and unpack data
-    data = server.receive()
-    try:
-    	data = packer.unpack(data)
-    except Exception as err:
-    	print('IMF unpack error: ', err)
-    	continue
+    packet = server.receive()
+    #if the packet is an RSA encrypted AES key
+    if(len(packet[0]) == RSA_PACKET)):
+        tool.addAesKey(packet)
+    elif(len(packet[0]) == VALID_PACKET):
+        #decrypt the data and attempt to unpack it
+        data = tool.decryptAESData(packet)
+        try:
+            data = packer.unpack(data)
+        except Exception as err:
+            print('IMF unpack error: ', err)
+            continue
 
-    #save to SQLite3 server
-    write(data, curser, connection)
+        #save to SQLite3 server
+        write(data, curser, connection)
