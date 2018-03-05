@@ -11,6 +11,7 @@ import sys
 # import local py
 import tcpcomms
 import packer
+import encryptiontool
 
 # declaring constants
 YEAR_CONSTANT = '20'
@@ -83,7 +84,7 @@ connection = sqlite3.connect(dbPath)
 curser = connection.cursor()
 
 #instantiate security tool object
-tool = securityTools.SecurityTool()
+tool = encryptiontool.SecurityTool()
 
 # receive-unpack-write loop
 while(True):
