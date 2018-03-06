@@ -37,10 +37,9 @@ def decryptAES( data, key):
 def testAES():
     key = generateKey()
     dataA = b'fourteen bytes'
-    cipher = generateCipher(key)
-    dataB = encryptAES(dataA, cipher)
+    dataB = encryptAES(dataA, key)
     print(dataB)
-    dataC = decryptAES(dataB, cipher)
+    dataC = decryptAES(dataB, key)
     print(dataC)
 
 #Additional little code samples for varible packet size, given an ability to end with two null bytes.
