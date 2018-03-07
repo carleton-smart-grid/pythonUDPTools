@@ -23,6 +23,7 @@ verbose = False
 transPeriod = 15*60 #15 Minutes
 retrans = 5
 pack = False
+encrypt = False
 homeId = 1
 
 stack = []
@@ -112,6 +113,9 @@ if __name__ == '__main__':
         elif flag == '-h':
             homeId = int(flags.pop(0))
 
+        elif flag == '-e':
+            encrypt = True
+
     printv('Details:')
     printv('\t{:30} {}'.format('TA IP address',taIP))
     printv('\t{:30} {}'.format('Home ID',homeId))
@@ -133,6 +137,8 @@ if __name__ == '__main__':
         # XML -> IMF
         if(pack):
             data = packer.pack(data)
+
+        if(encrypt):    
             data = aestools.encryptAES(data, currentKey)
 
         # Transmits the data and empties the stack
