@@ -30,7 +30,7 @@ def encryptAES( data, key):
 def decryptAES( data, key):
 
     cipher = AES.new(key, AES.MODE_ECB)
-    decryptedData = cipher.decrypt(data)
+    decryptedData = cipher.decrypt(bytes(data))
     unpaddedData = decryptedData[:DATA_LENGTH]
     return unpaddedData
 

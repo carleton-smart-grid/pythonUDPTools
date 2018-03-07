@@ -6,8 +6,13 @@ from Crypto.Random import get_random_bytes
 #Further work can be done to make it better
 #Namely signing with the private key of the sender to authenticate it.
 #Also currently using absolute paths to what is effectively a random directory.
-KEY_PATH = '/home/pi/SmartGrid/key.bin'
-PUBLIC_KEY_PATH = '/home/pi/SmartGrid/publickey.bin'
+
+#Test paths
+KEY_PATH = 'key.bin'
+PUBLIC_KEY_PATH = 'publickey.bin'
+#PI directory paths
+#KEY_PATH = '/home/pi/SmartGrid/key.bin'
+#PUBLIC_KEY_PATH = '/home/pi/SmartGrid/publickey.bin'
 
 #Generate a pair of public and private keys saving them in the appropriate file
 def generateRSAKeys ():
@@ -25,7 +30,7 @@ def generateRSAKeys ():
 def encryptRSA( dat):
 
     keyString = open(PUBLIC_KEY_PATH, 'rb').read()
-    key = RSA.import_key(keyString)
+    key = RSA.importKey(keyString)
     cipher = PKCS1_OAEP.new(key)
     encryptedData = cipher.encrypt(dat)
     return encryptedData
@@ -37,7 +42,7 @@ def decryptRSA( dat):
     keyString = open(KEY_PATH, 'rb').read()
     key = RSA.importKey(keyString)
     cipher = PKCS1_OAEP.new(key)
-    unencryptedData = cipher.decrypt(dat)
+    unencryptedData = cipher.decrypt(bytes(dat))
     return unencryptedData
 
 #must have already generated keys to use the test.
