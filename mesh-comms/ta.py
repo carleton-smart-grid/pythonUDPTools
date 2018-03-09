@@ -100,6 +100,9 @@ while(True):
     elif(len(packet[0]) == VALID_PACKET and encryptOn):
         #decrypt the data and attempt to unpack it
         data = tool.decryptAESData(packet)
+    #No security, simply discard the IP information of the packet veriable
+    else:
+        data = packet[0]
     try:
         data = packer.unpack(data)
     except Exception as err:
