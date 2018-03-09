@@ -18,7 +18,7 @@ def send(dest, data):
     try:
         # socket setup
         print('Establishing connection...')
-        scope_id = socket.if_nametoindex('lowpan0') 
+        scope_id = socket.if_nametoindex('lowpan0')
         #scope_id = socket.AF_INET
         sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
         sock.settimeout(TIMEOUT_SEC)
@@ -98,8 +98,8 @@ class Server:
             print('Receieved', len(payload), 'Byte(s)...')
             data.extend(payload)
 
-        # close current connection and return
+        # close current connection and returns a tuple with the data and IP address
         print('Total:', len(data), 'Byte(s)')
         print('Closing connection with:', src)
         connection.close()
-        return data
+        return (data, src[0])

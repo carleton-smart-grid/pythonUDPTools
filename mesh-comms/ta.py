@@ -11,9 +11,12 @@ import sys
 # import local py
 import tcpcomms
 import packer
+import encryptiontool
 
 # declaring constants
 YEAR_CONSTANT = '20'
+RSA_PACKET = 256
+VALID_PACKET = 16
 DEFAULT_DB_PATH = 'dat/power-usages.db'
 
 
@@ -63,6 +66,7 @@ def write(xml, curser, connection):
 
 # initialize parameters to default
 dbPath = DEFAULT_DB_PATH
+encryptOn = False
 
 # check for flags
 flags = sys.argv
@@ -72,6 +76,8 @@ while (len(flags) > 0):
     # database path flag
     if (flag == '-d'):
         dbPath = str(flags.pop(0))
+    elif (flag == '-e'):
+        encryptOn = True
 
 # setup server object
 server = tcpcomms.Server()
@@ -80,15 +86,28 @@ server = tcpcomms.Server()
 connection = sqlite3.connect(dbPath)
 curser = connection.cursor()
 
+#instantiate security tool object
+if(encryptOn):
+    tool = encryptiontool.SecurityTool()
+
 # receive-unpack-write loop
 while(True):
     # receive and unpack data
-    data = server.receive()
+    packet = server.receive()
+    #if the packet is an RSA encrypted AES key
+    if(len(packet[0]) == RSA_PACKET and encryptOn):
+        tool.addAesKey(packet)
+    elif(len(packet[0]) == VALID_PACKET and encryptOn):
+        #decrypt the data and attempt to unpack it
+        data = tool.decryptAESData(packet)
+    #No security, simply discard the IP information of the packet veriable
+    else:
+        data = packet[0]
     try:
-    	data = packer.unpack(data)
+        data = packer.unpack(data)
     except Exception as err:
-    	print('IMF unpack error: ', err)
-    	continue
+        print('IMF unpack error: ', err)
+        continue
 
     #save to SQLite3 server
     write(data, curser, connection)

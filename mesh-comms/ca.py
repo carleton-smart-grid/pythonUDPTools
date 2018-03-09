@@ -8,6 +8,8 @@ import random as rn
 import packer
 import sys
 import collections
+import rsatools
+import aestools
 from datetime import datetime
 
 # Scheduling elements
@@ -21,9 +23,11 @@ verbose = False
 transPeriod = 15*60 #15 Minutes
 retrans = 5
 pack = False
+encrypt = False
 homeId = 1
 
 stack = []
+currentKey = 0
 
 # Declaring Constants
 taIP = 'dead:beef::1'
@@ -73,6 +77,12 @@ def transmit(data):
     stack.append(data)
     return False
 
+def getAndSendKey():
+    currentKey = aestools.generateKey()
+    encryptedKey = rsatools.encryptRSA(currentKey)
+    transmit(encryptedKey)
+
+
 # Main
 # -----------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -103,6 +113,9 @@ if __name__ == '__main__':
         elif flag == '-h':
             homeId = int(flags.pop(0))
 
+        elif flag == '-e':
+            encrypt = True
+
     printv('Details:')
     printv('\t{:30} {}'.format('TA IP address',taIP))
     printv('\t{:30} {}'.format('Home ID',homeId))
@@ -110,16 +123,23 @@ if __name__ == '__main__':
     printv('\t{:30} {}'.format('Retransmission attempts',retrans))
     printv('\t{:30} {}\n'.format('XML to IMF compression',pack))
 
-
+    #count is used to expire the current AES key after a bit more than a day (given 15 minute intervals)
+    count = 100
 
     # Main Loop logic
     while True:
         startTime = time.time()
         data = generateData()
 
+        if(count == 100):
+            getAndSendKey()
+            count = 0
         # XML -> IMF
         if(pack):
             data = packer.pack(data)
+
+        if(encrypt):    
+            data = aestools.encryptAES(data, currentKey)
 
         # Transmits the data and empties the stack
         if transmit(data) and stack:
@@ -130,4 +150,5 @@ if __name__ == '__main__':
         # Sleep the process for the transmission period
         # Corrects clock drift due to execution and retransmission time
         # Utilizes Unix Epoch Time
+        count +=1
         time.sleep(transPeriod - ((time.time() - startTime)% transPeriod))
