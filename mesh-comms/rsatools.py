@@ -8,11 +8,11 @@ from Crypto.Random import get_random_bytes
 #Also currently using absolute paths to what is effectively a random directory.
 
 #Test paths
-KEY_PATH = 'key.bin'
-PUBLIC_KEY_PATH = 'publickey.bin'
+#KEY_PATH = 'key.bin'
+#PUBLIC_KEY_PATH = 'publickey.bin'
 #PI directory paths
-#KEY_PATH = '/home/pi/SmartGrid/key.bin'
-#PUBLIC_KEY_PATH = '/home/pi/SmartGrid/publickey.bin'
+KEY_PATH = '/home/pi/SmartGrid/key.bin'
+PUBLIC_KEY_PATH = '/home/pi/SmartGrid/publickey.bin'
 
 #Generate a pair of public and private keys saving them in the appropriate file
 def generateRSAKeys ():
