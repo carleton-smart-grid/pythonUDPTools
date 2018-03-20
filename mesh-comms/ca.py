@@ -131,7 +131,7 @@ if __name__ == '__main__':
         startTime = time.time()
         data = generateData()
 
-        if(count == 100):
+        if(count == 100 and encrpyt):
             getAndSendKey()
             count = 0
         # XML -> IMF
