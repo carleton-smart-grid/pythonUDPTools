@@ -55,13 +55,13 @@ Configuring the 6LoWPAN (as `lowpan0`) interface for a **TA**, and starting [Sim
 
 It should be noted that in order to use the [cliRPL.py](https://github.com/carleton-smart-grid/simpleRPL#getting-information-on-a-running-instance) tool to discern node information or to run administration functions, `./startTA.sh` should be run in the root directory of `simpleRPL` (ie the directory containing the files `cliRPL.py` and `simpleRPL.py`).
 
-#### cliReporter.py
+### cliReporter.py
 
 This reports to a lowpan-visualiser instance running on a server.
 
 This script should be run from a RPi that already has [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) running (using the [startCA script](#startCA.sh) preferably).
 
-### Usage
+#### Usage
 
 The cliReporter must be run from the same directory that RPL is run from (so that it can connect to the RPL_CLI socket)
 
