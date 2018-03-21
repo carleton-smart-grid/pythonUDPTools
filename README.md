@@ -55,14 +55,20 @@ Configuring the 6LoWPAN (as `lowpan0`) interface for a **TA**, and starting [Sim
 
 It should be noted that in order to use the [cliRPL.py](https://github.com/carleton-smart-grid/simpleRPL#getting-information-on-a-running-instance) tool to discern node information or to run administration functions, `./startTA.sh` should be run in the root directory of `simpleRPL` (ie the directory containing the files `cliRPL.py` and `simpleRPL.py`).
 
-### cliReporter.py
+#### cliReporter.py
+
+This reports to a lowpan-visualiser instance running on a server.
+
 This script should be run from a RPi that already has [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) running (using the [startCA script](#startCA.sh) preferably).
 
-This script should be run in the directory that Simple RPL was started in, as it contains the sockets that are required to access the RPL metadata.
-```
-sudo python [full path]/cliReporter/cliReporter.py [prefix] [host_ip]
-```
-Where `prefix` is everything after the `fe80::` on the `lowpan0` interface and `host_ip` is the IP address of the server running the visualizer
+### Usage
+
+The cliReporter must be run from the same directory that RPL is run from (so that it can connect to the RPL_CLI socket)
+
+    sudo python ../cliReporter/cliReporter.py [IID] [host_ip]
+
+Where `IID` is everything **after** the `fe80::` (or `dead::beef::`), *not including the ::* and `host_ip` is the IP of the server running the visualizer
+
 
 ### tcpcomms.py
 The server (receiver) should first instantiate a tcpcomms server object `server = tcpcomms.Server()`, which will bind to port 4905 by default. After which, calling `packet = server.receive()` will block until a successful TCP transfer has completed, and store the resulting data and source IP address in `packet`. If the data received was packed into an IMF format, calling `data = packer.unpack(data)` will convert the data into XML format.
