@@ -43,7 +43,7 @@ Due to small packet sizes and the lossy nature of 6LoWPAN mesh networks, minimal
 
 It should be noted at all words and double-words are encoded using the **litle endian** schema (ie. the *least* significant byte is given first).
 
-The structure of an INF formated packet is as follows:
+The structure of an IMF formated packet is as follows:
 
 Value | Byte Number | Bit Range | Total Bits | Encoded As
 ----- | ----------- | --------- | ---------- | ----------
