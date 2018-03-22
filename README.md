@@ -93,9 +93,12 @@ This is the script that should be running on the TA to receive information and p
 | --- | --- |
 | `-v`| Enable verbose mode |
 | `-e`| Enable encryption mode |
+| `-d [DB]`| Use database `DB` |
 
 #### General Usage
-`sudo python3 ta.py -v [-e] -d database.db`
+`sudo python3 ta.py -v [-e] [-d database.db]`
+
+Database defaults to `dat/power-usages.db`
 
 Ta.py handles interrupts gracefully, SIGKILL (2, ^C) will kill the program and close any open sockets. SIGQUIT (3, ^\\) will break the current iteration of the loop, this is useful for when SYNACKs are lost in the mesh and the receive socket livelocks (this appears to be a TCP 'bug' of sorts). Of course, any data currently in the socket will be lost.
 
