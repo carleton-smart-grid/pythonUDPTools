@@ -1,0 +1,3 @@
+**/__pycache__      #ignore any python leftovers
+*.db                #ignore any databases from testing
+*.bin               #ignore keys

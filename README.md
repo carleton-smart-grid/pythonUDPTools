@@ -82,11 +82,22 @@ Provides a runnable **CA stub** that generates a pseudorandom _currentload_ and 
 | `-a [ta_ip]` | Defines target TA IPv6 address |
 | `-h [j]` | Specifies the spoofed _Home ID_ |
 
-General Usage:
+#### General Usage
 `sudo python3 ca.py -v -c -h 1 -r 5 -t 10 -a dead:beef::1`
 
 ### ta.py
-TODO
+
+This is the script that should be running on the TA to receive information and put it in the database
+
+| CLI parameters | Description |
+| --- | --- |
+| `-v`| Enable verbose mode |
+| `-e`| Enable encryption mode |
+
+#### General Usage
+`sudo python3 ta.py -v [-e] -d database.db`
+
+Ta.py handles interrupts gracefully, SIGKILL (2, ^C) will kill the program and close any open sockets. SIGQUIT (3, ^\\) will break the current iteration of the loop, this is useful for when SYNACKs are lost in the mesh and the receive socket livelocks (this appears to be a TCP 'bug' of sorts). Of course, any data currently in the socket will be lost.
 
 ### udpping.py
 TODO
