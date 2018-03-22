@@ -65,7 +65,7 @@ class Server:
         # socket setup
         print('Binding Socket on port', PORT, '...')
         scope_id = socket.if_nametoindex('lowpan0')
-        #scope_id = socket.AF_INET
+        # scope_id = socket.AF_INET
         self.serverSocket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
         self.serverSocket.bind((HOST, PORT, 0, scope_id))
         #self.serverSocket.bind((HOST, PORT))
@@ -77,7 +77,7 @@ class Server:
     def teardown(self):
         if (self.serverSocket != None):
             print('Closing socket...')
-            self.serverSocket.close
+            self.serverSocket.shutdown(socket.SHUT_RDWR) # Shutdown reads and writes
 
 
     # recieve data over multiple transactions
