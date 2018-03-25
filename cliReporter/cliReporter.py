@@ -20,6 +20,8 @@ def send(data, dest):
     try:
         sock.sendto(data.encode('utf-8'), (dest, PORT))
         print(data)
+    except socket.error:
+        print("No network, not sending")
     finally:
         sock.close()
 
@@ -38,7 +40,7 @@ def main():
     while(True):
 	    p = Popen(["sudo cliRPL.py show-dao-parent"], shell=True, stdout=PIPE, stderr=PIPE)
 	    parentOutput, stderr = p.communicate()
-	    print(parentOutput)
+	    # print(parentOutput)
 	    parentRank = re.search(r'.*rank: (\d+).*', parentOutput)
 	    if (parentRank is not None):
 	        parentRank = parentRank.group(1)
@@ -52,7 +54,7 @@ def main():
 	    else :
 	        parentIPSuffix = None
 
-	    print(parentIPSuffix)
+	    # print(parentIPSuffix)
 	    p = Popen(["sudo cliRPL.py show-current-dodag"], shell=True, stdout=PIPE, stderr=PIPE)
 	    dodagOutput, stderr = p.communicate()
 	    myRank = re.search(r'Rank: (\d+)', dodagOutput).group(1)
