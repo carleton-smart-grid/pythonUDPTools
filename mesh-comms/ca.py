@@ -134,7 +134,7 @@ if __name__ == '__main__':
         startTime = time.time()
         data = generateData()
 
-        if(count == EXPIRE_KEY and encrpyt):
+        if(count == EXPIRE_KEY and encrypt):
             currentKey = getAndSendKey()
             count = 0
         # XML -> IMF
