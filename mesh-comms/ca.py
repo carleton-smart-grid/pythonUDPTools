@@ -27,10 +27,12 @@ encrypt = False
 homeId = 1
 
 stack = []
-currentKey = 0
+
 
 # Declaring Constants
 taIP = 'dead:beef::1'
+# Number of transactions before key is sent
+EXPIRE_KEY = 10
 
 
 # Defining Functions
@@ -81,6 +83,7 @@ def getAndSendKey():
     currentKey = aestools.generateKey()
     encryptedKey = rsatools.encryptRSA(currentKey)
     transmit(encryptedKey)
+    return currentKey
 
 
 # Main
@@ -124,21 +127,21 @@ if __name__ == '__main__':
     printv('\t{:30} {}\n'.format('XML to IMF compression',pack))
 
     #count is used to expire the current AES key after a bit more than a day (given 15 minute intervals)
-    count = 100
+    count = EXPIRE_KEY
 
     # Main Loop logic
     while True:
         startTime = time.time()
         data = generateData()
 
-        if(count == 100 and encrpyt):
-            getAndSendKey()
+        if(count == EXPIRE_KEY and encrpyt):
+            currentKey = getAndSendKey()
             count = 0
         # XML -> IMF
         if(pack):
             data = packer.pack(data)
 
-        if(encrypt):    
+        if(encrypt):
             data = aestools.encryptAES(data, currentKey)
 
         # Transmits the data and empties the stack
