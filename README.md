@@ -9,7 +9,6 @@ All programs written operate on port 4907. Please ensure no other application is
     |   └── cliReporter.py
     |
     ├── mesh-comms
-    |   ├── init.sql
     |   ├── packer.py
     |   ├── tcpcomms.py
     |   ├── ta.py
@@ -25,90 +24,146 @@ All programs written operate on port 4907. Please ensure no other application is
     |   └── README.md
     |
     ├── test-util
+    |   ├── init.sql
     |   └── udpping.py
     |
     ├── README.md
     └── useful-cmds.md
 ```
-### Directory: mesh-comms
+## Directory: mesh-comms
 The `mesh-comms` directory contains all the relative code/scripts to send, encrypt, pack/unpack, and receive usage data using TCP data transfer. It also contains the main runnables for the **TA** and **CA stub**.
 
-### Directory: startup
-The `startup` directory contains scripts used to configure the LoWPAN radios and configure/start Simple RPL routing.
+## Directory: startup
+The `startup` directory contains scripts used to configure the LoWPAN radios and configure/start Simple RPL routing. It also contains any additional setup files.
 
-### Directory: test-util
+## Directory: test-util
 The `test-util` directory contains any auxiliary code used to test the various parameters of the mesh network.
 
-### Directory: cliReporter
+## Directory: cliReporter
 This contains the CLI reporter python script which reports the status of a 6LoWPAN RPL node to a [lowpan-visualizer](https://github.com/carleton-smart-grid/lowpan-visualizer) via WiFi connection.
 
 
 
-# Usage Instructions
-### startCA.sh
-Configuring the 6LoWPAN (as `lowpan0`) interface for a **CA**, and starting [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) is done trivially through: `sudo ./startCA.sh`.
+# Usage Instructions for Runnables
+## startCA.sh
+Configuring the 6LoWPAN (as `lowpan0`) interface for a **CA**, and starting [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) is done trivially through:
+```
+sudo ./startCA.sh
+```
 
 It should be noted that in order to use the [cliRPL.py](https://github.com/carleton-smart-grid/simpleRPL#getting-information-on-a-running-instance) tool to discern node information or to run administration functions, `./startCA.sh` should be run in the root directory of `simpleRPL` (ie the directory containing the files `cliRPL.py` and `simpleRPL.py`).
 
-### startTA.sh
-Configuring the 6LoWPAN (as `lowpan0`) interface for a **TA**, and starting [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) is done trivially through: `sudo ./startTA.sh`.
+
+## startTA.sh
+Configuring the 6LoWPAN (as `lowpan0`) interface for a **TA**, and starting [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) is done trivially through:
+```
+sudo ./startTA.sh
+```
 
 It should be noted that in order to use the [cliRPL.py](https://github.com/carleton-smart-grid/simpleRPL#getting-information-on-a-running-instance) tool to discern node information or to run administration functions, `./startTA.sh` should be run in the root directory of `simpleRPL` (ie the directory containing the files `cliRPL.py` and `simpleRPL.py`).
 
-### cliReporter.py
 
-This reports to a lowpan-visualiser instance running on a server.
-
-This script should be run from a RPi that already has [Simple RPL](https://github.com/carleton-smart-grid/simpleRPL) running (using the [startCA script](#startCA.sh) preferably).
-
-#### Usage
-
-The cliReporter must be run from the same directory that RPL is run from (so that it can connect to the RPL_CLI socket)
-
-    sudo python ../cliReporter/cliReporter.py [IID] [host_ip]
-
-Where `IID` is everything **after** the `fe80::` (or `dead::beef::`), *not including the ::* and `host_ip` is the IP of the server running the visualizer
-
-
-### tcpcomms.py
-The server (receiver) should first instantiate a tcpcomms server object `server = tcpcomms.Server()`, which will bind to port 4905 by default. After which, calling `packet = server.receive()` will block until a successful TCP transfer has completed, and store the resulting data and source IP address in `packet`. If the data received was packed into an IMF format, calling `data = packer.unpack(data)` will convert the data into XML format.
-
-The client (sender) should first define the data to be sent (either as a byte array or string) in a variable `data`. If the data is encoded as a valid XML, it can be converted into IMF format by calling `data = packer.pack(data)`. Then to send the data the method `tcpcomms.send('dead:beef::1', data)` should be called, in which *dead:beef::1* is the destination address.
-
-### ca.py
+## ca.py
 Provides a runnable **CA stub** that generates a pseudorandom _currentload_ and _forecastload_ which is subsequently sent via the `tcpcomms.py` library to the TA.
 
-| CLI parameters | Description |
+| CLI Parameters | Description |
 | --- | --- |
 | `-c` | Enables XML to IMF compression |
 | `-v`| Enable verbose mode |
 | `-e`| Enable encryption mode |
-| `-t [n]` | Sends usage data every _n_ seconds |
-| `-r [k]` | Attempts _k_ retransmissions |
+| `-t [n]` | Sends usage data every *n* seconds |
+| `-r [k]` | Attempts *k* retransmissions |
 | `-a [ta_ip]` | Defines target TA IPv6 address |
-| `-h [j]` | Specifies the spoofed _Home ID_ |
+| `-h [j]` | Specifies the spoofed *house_id* value |
 
 General Usage:
-`sudo python3 ca.py -v -c -h 1 -r 5 -t 10 -a dead:beef::1`
+```
+sudo python3 ca.py -v -c -h 1 -r 5 -t 10 -a dead:beef::1
+```
 
-### ta.py
+## ta.py
+This program provides full TA functionality for the node. This program should only be run on the designated DODAG node of the system (normally IPv6 address dead:beef::1 by convention). The program is generally executed as:
+```
+sudo python3 ta.py -e -d [D]
+```
+| CLI Parameters | Description |
+|----------------|-------------|
+| `-e` | Enable AES encryption on packets |
+| `-d` | Relative path from the calling directory to the SQLite3 database containing the `usages` table, in which the TA will store received usage data
+
+If not explicitly set using the CLI parameters, the database used is set to `dat/power-usages.db` (relative to the directory `ta.py` is called from). The sqlite3 database used by the TA **must** contain a table entitled "usages" which conforms to a predefined schema, given in [init.sql](https://github.com/carleton-smart-grid/smartgrid-comms/blob/master/startup/init.sql). Initial setup of the database can be done trivially using the provide `init.sql` file, given as:
+```
+sqlite3 database.db < init.sql
+```
+
+It is also of interest to note that the `init.sql` file can be used to reset/clear the saved usage values.
+
+
+## cliReporter.py
+This program communicates a node's rank and parent to a [lowpan-visualiser]() program using UDP over WiFi. This script should be run from a RPi that already has simpleRPL running (using the [startCA script](#startCA.sh) preferably).
+
+The cliReporter must be run from the same directory that RPL is run from (so that it can connect to the *RPL_CLI* socket) The program is run such that:
+```
+sudo python cliReporter.py [IID] [host_ip]
+```
+
+Where `IID` is the partial IPv6 address of the node, specifically the section after the initial double colon `dead:beef::`. The parameter `host_ip` is the full IP address of the server running the visualizer. For example, running the cliReporter program on a node with an IPv6 address of `dead:beef::0:1:2:3`, with the lowpan-visualizer program running on host with address 192.168.1.50 would be called as:
+```
+sudo python cliReporter.py 0:1:2:3 192.168.1.50
+```
+
+
+## udpping.py
 TODO
 
-### udpping.py
-TODO
 
-### Packer.py
+
+
+
+# Usage Instructions for Libraries
+## tcpcomms.py
+The tcpcomms library contains all the necessary tools needed to send data over the IPv6 6LoWPAN network. Although this **is not** a runnable, the library is built such that it can by used easily from the python console for debugging and demoing purposed. Instructions for using the library are given as follows.
+
+The server (receiver) should first instantiate a tcpcomms server object `server = tcpcomms.Server()`, which will bind to port 4905 by default. After which, calling `packet = server.receive()` will block until a successful TCP transfer has completed, and store the resulting data and source IP address in `packet`. If the data received was packed into an IMF format, calling `data = packer.unpack(data)` will convert the data into XML format.
+
+Sample code for receiving a single data transfer from the python console is given below.
+```python
+> import tcpcomms as comms    # imports the library
+> server = comms.Server()     # creates a server, binding to port 4905
+> data = server.receive()     # blocks for data
+> print(data)
+  'hello world'
+>
+```
+
+The client (sender) should first define the data to be sent (either as a byte array or string) in a variable `data`. If the data is encoded as a valid XML, it can be converted into IMF format by calling `data = packer.pack(data)`. Then to send the data the method `tcpcomms.send('dead:beef::1', data)` should be called, in which *dead:beef::1* is the destination address.
+Sample code for receiving a single data transfer from the python console is given below.
+
+Sample code for sending a single data transfer from the python console is given below.
+```python
+> import tcpcomms as comms    # imports the library
+> addr = 'dead:beef::1'
+> data = 'hello world'
+> comms.send(addr, data)      # sends data to addr
+>
+```
+
+
+## Packer.py
 Packer.py is a library for packing and unpacking XML to IMF and vice versa. It contains two main functions: `pack()` and `unpack(xml)`.
 
 The `pack(xml)` function should be used to convert valid XML-formated usage data to an IMF format. To use, simply call as `imf = packer.pack(xml)`, in which xml is a valid XML-formated string. The function will return a *bytearray* type object.
 
 The `unpack()` function takes a valid IMF *bytearray* object as input and returns the usage data as an XML formated string. If an XML formated string is given as an input, the returned XML will simply be the given XML such that: `(xml → xml) ∧ (¬xml → unpack xml)`. Calling the unpack function _**may throw exceptions: `indexException` or `etree.ElementTree.ParseError`**_.
 
-### aestools.py
+
+## aestools.py
 Contains three functions that are used by `ca.py` and `encryptiontool.py`, `key = aestools.generateKey()` which returns a 16 byte random key to use for AES encryption. The other two functions `data = aestools.encryptAES(data, key)` and `data = aestools.decryptAES(data, key)` both do exactly as the name implies. Encrypt takes unencrypted data and an AES key and returns encrypted data, the other takes encrypted data and a key to return usable data.
 
-### rsatools.py
+
+## rsatools.py
 Contains three functions that are used by `ca.py` and `encryptiontool.py`, `rsatools.generateKey()` which saves both a full key pair and a public key to a specific directory (currently the current directory). The other two functions `data = rsatools.encryptRSA(data, key)` and `data = rsatools.decryptRSA(data, key)` both do exactly as the name implies. Encrypt takes unencrypted data and an public RSA key and returns encrypted data, the other takes encrypted data and a private RSA key to return usable data.
 
-### encryptiontool.py
+
+## encryptiontool.py
 TODO
