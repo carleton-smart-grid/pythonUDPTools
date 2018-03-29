@@ -147,6 +147,16 @@ Sample code for sending a single data transfer from the python console is given 
 > comms.send(addr, data)      # sends data to addr
 >
 ```
+The full set of function calls for the tcpcomms library can be found below. It should be noted *additional* exceptions may be raised if the preconditions are not met.
+
+Function Call | Precondition(s) | Postcondition(s)
+--------------|---------------|---------------
+`send(dest, data)` | <ol> <li> `dest` is a valid IPv6 address, given as type `str` </li> <li> `data` is either of type `str` or `bytearray` </li> </ol> | <ol> <li> `data` is sent to the given `dest` address if reachable </li> <li> An exception is raised if the socket timeouts, or, if the address is unreachable </li> </ol>
+`Sever()` | <ol> <li> Port 4905 is free </li> </ol> | <ol> <li> A `Server` type object is returned </li> <li> Port 4905 is bound </li> </ol>
+`Server.setup()` | <ol> <li> Port 4905 is free </li> <li> The Server object is not currently setup | <ol> <li> Port 4905 is bound </li> </ol>
+`Server.teardown()` | None | <ol> <li> `Server.serversocket` is unbound </li> </ol>
+`Server.receive()` | <ol> <li> Server is setup </li> </ol> | <ol> <li> The received data is returned as type `bytearray` </li> </ol>
+
 
 
 ## packer.py
@@ -155,6 +165,19 @@ Sample code for sending a single data transfer from the python console is given 
 The `pack(xml)` function should be used to convert valid XML-formated usage data to an IMF format. To use, simply call as `imf = packer.pack(xml)`, in which xml is a valid XML-formated string. The function will return a *bytearray* type object.
 
 The `unpack()` function takes a valid IMF *bytearray* object as input and returns the usage data as an XML formated string. If an XML formated string is given as an input, the returned XML will simply be the given XML such that: `(xml → xml) ∧ (¬xml → unpack xml)`. Calling the unpack function _**may throw exceptions: `indexException` or `etree.ElementTree.ParseError`**_.
+
+The full set of function calls for the packer library can be found below. It should be noted *additional* exceptions may be raised if the preconditions are not met.
+
+Function Call | Precondition(s) | Postcondition(s)
+--------------|---------------|---------------
+`pack(xmlContents)` | |
+`unpack(packetContents)` | |
+`floatToBytes(num)` | |
+`bytesToFloat(bytes)` | |
+`intToBits(num, minLength)` | |
+`bytesToInt(bytes)` | |
+`printableByteArray(arr)` | |
+
 
 
 ## aestools.py
