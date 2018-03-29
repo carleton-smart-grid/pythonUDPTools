@@ -100,11 +100,11 @@ It is also of interest to note that the `init.sql` file can be used to reset/cle
 
 
 ## cliReporter.py
-This program communicates a node's rank and parent to a [lowpan-visualiser]() program using UDP over WiFi. This script should be run from a RPi that already has simpleRPL running (using the [startCA script](#startCA.sh) preferably).
+This program communicates a node's rank and parent to a [lowpan-visualiser](https://github.com/carleton-smart-grid/lowpan-visualiser) program using UDP over WiFi. This script should be run from a RPi that already has simpleRPL running (using the [startCA script](#startCA.sh) preferably).
 
 The cliReporter must be run from the same directory that RPL is run from (so that it can connect to the *RPL_CLI* socket) The program is run such that:
 ```
-sudo python cliReporter.py [IID] [host_ip]
+sudo python2 cliReporter.py [IID] [host_ip]
 ```
 
 Where `IID` is the partial IPv6 address of the node, specifically the section after the initial double colon `dead:beef::`. The parameter `host_ip` is the full IP address of the server running the visualizer. For example, running the cliReporter program on a node with an IPv6 address of `dead:beef::0:1:2:3`, with the lowpan-visualizer program running on host with address 192.168.1.50 would be called as:
@@ -149,8 +149,8 @@ Sample code for sending a single data transfer from the python console is given 
 ```
 
 
-## Packer.py
-Packer.py is a library for packing and unpacking XML to IMF and vice versa. It contains two main functions: `pack()` and `unpack(xml)`.
+## packer.py
+`packer.py` is a library for packing and unpacking XML to IMF and vice versa. It contains two main functions: `pack()` and `unpack(xml)`.
 
 The `pack(xml)` function should be used to convert valid XML-formated usage data to an IMF format. To use, simply call as `imf = packer.pack(xml)`, in which xml is a valid XML-formated string. The function will return a *bytearray* type object.
 
