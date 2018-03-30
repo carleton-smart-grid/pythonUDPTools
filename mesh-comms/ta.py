@@ -20,7 +20,6 @@ YEAR_CONSTANT = '20'
 RSA_PACKET = 256
 VALID_PACKET = 16
 DEFAULT_DB_PATH = 'dat/power-usages.db'
-DEADLOCK_TIMEOUT = 30 # 30 seconds of deadlock is generally locked enoug hthat there's no recovering
 
 ###############################################################################
 # GRACEFUL SIGNAL HANDLING
@@ -45,11 +44,6 @@ class Killer:
 ###############################################################################
 # DECLARING FUNCTIONS
 ###############################################################################
-def timeoutSocket():
-    printv("Socket deadlock detected - breaking lock")
-    raise InterruptedError
-
-
 def printv(string):
     if verbose:
         print(string)
@@ -123,21 +117,14 @@ curser = connection.cursor()
 if(encryptOn):
     tool = encryptiontool.SecurityTool()
 
-
 # receive-unpack-write loop
 while(killer.die != True):
-
-    socketDeadlockDetector = Timer(DEADLOCK_TIMEOUT, timeoutSocket) # We have to recreate this every time, we can't restart the same timer even though it's dead.
-    socketDeadlockDetector.start() # Start the timer now - if DEADLOCK_TIMEOUT is hit, the server.receive function is locked and it will be interrupted
-
     # receive and unpack data
     try:
         packet = server.receive()
     except InterruptedError:
         print("Interrupted socket receive, continuing") # This is an error and as such is printed regardless of verbosity
         continue
-
-    socketDeadlockDetector.cancel() # We've hit the end, cancel the timer regardless of how we got here, it will be restarted next time around
 
     #if the packet is an RSA encrypted AES key
     if(len(packet[0]) == RSA_PACKET and encryptOn):
