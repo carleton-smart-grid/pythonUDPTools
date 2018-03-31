@@ -164,19 +164,19 @@ Function Call | Precondition(s) | Postcondition(s)
 
 The `pack(xml)` function should be used to convert valid XML-formated usage data to an IMF format. To use, simply call as `imf = packer.pack(xml)`, in which xml is a valid XML-formated string. The function will return a *bytearray* type object.
 
-The `unpack()` function takes a valid IMF *bytearray* object as input and returns the usage data as an XML formated string. If an XML formated string is given as an input, the returned XML will simply be the given XML such that: `(xml → xml) ∧ (¬xml → unpack xml)`. Calling the unpack function _**may throw exceptions: `indexException` or `etree.ElementTree.ParseError`**_.
+The `unpack()` function takes a valid IMF *bytearray* object as input and returns the usage data as an XML formated string. If an XML formated string is given as an input, the returned XML will simply be the given XML such that: **(xml → xml) ∧ (¬xml → unpack xml)**. Calling the unpack function may throw exceptions: `indexException` or `etree.ElementTree.ParseError`.
 
 The full set of function calls for the packer library can be found below. It should be noted *additional* exceptions may be raised if the preconditions are not met.
 
 Function Call | Precondition(s) | Postcondition(s)
---------------|---------------|---------------
-`pack(xmlContents)` | |
-`unpack(packetContents)` | |
-`floatToBytes(num)` | |
-`bytesToFloat(bytes)` | |
-`intToBits(num, minLength)` | |
-`bytesToInt(bytes)` | |
-`printableByteArray(arr)` | |
+--------------|-----------------|---------------
+`pack(xmlContents)` | <ol> <li> `xmlContents` is given as type `str` </li> <li> `xmlContents` matches the expected XML tag/attribute/element structure, refer to [packet-format.md](https://github.com/carleton-smart-grid/smartgrid-comms/blob/master/mesh-comms/packet-format.md) </li> </ol> | <ol> <li> Returns the contents of `xmlContents` as a valid IMF of type `bytearray` (length of 14 bytes) </li> </ol>
+`unpack(packetContents)` | <ol> <li> `packetContents` is a valid IMF of type `bytearray`, and is the expected length of 14 Bytes </li> <li> `packetContents` is of type `str` and matches the expect XML tag/attribute/element structure </li> </ol> | <ol> <li> Returns an XML formated representation of `packetContents` of type `str` (if `packetContents` was given as an XML, merely returns `packetContents`) </li> <li> Throws `indexException` if `packetContents` is not expected length of 14 Bytes AND `packetContents` is of type `bytearray` </li> <li> Throws `xml.etree.ElementTree.ParseError` if `packetContents` is not a valid XML AND `packetContents` is of type `str` </li> </ol>
+`floatToBytes(num)` | <ol> <li> `num` is of type `float` </li> </ol> | <ol> <li> Returns an IEEE-754 floating point encoded as type `bytearray`, of length 4 </li> <li> Returned `bytearray` is encoded using *little endian* schema (LSB at 0) </li> </ol>
+`bytesToFloat(bytes)` | <ol> <li> `bytes` is of type `bytearray` with a length of 4 <li> <li> `bytes` is an IEEE-754 floating point encoded as little endian (LSB at 0) </li> </ol> | <ol> <li> Returns a `float` type representation </li> </ol>
+`intToBits(num, minLength)` | <ol> <li> `num` and `minLength` are of type `int` </li> </ol> | <ol> <li> Returns type `str` equal to `num` as a binary string (ie a string of only 1 and 0 characters) </li> <li> Returned string is guaranteed to be at least `minLength` in length. Resulting string will be 0 padded to satisfy this condition </li> </ol>
+`bytesToInt(bytes)` | <ol> <li> `bytes` of of type `bytearray` or `bytes` </li> <li> `bytes` is encoded using little endian schema (LSB at 0)</li> </ol> | <ol> <li> Returns type `int` equal to the value of all entries in `bytes` read as one unsigned integer </li> </ol>
+`printableByteArray(arr)` | <ol> <li> `arr` is given as type `bytearray` </li> </ol> | <ol> <li> Returns a human-readable string (type `str`) of the hex values in `arr` (ie 0x03 0xF3 0x4D) </li> </ol>
 
 
 
