@@ -21,10 +21,10 @@ All programs written operate on port 4907. Please ensure no other application is
     ├── startup
     |   ├── startCA.sh
     |   ├── startTA.sh
+    |   ├── init.sql
     |   └── README.md
     |
     ├── test-util
-    |   ├── init.sql
     |   └── udpping.py
     |
     ├── README.md
@@ -154,7 +154,7 @@ Function Call | Precondition(s) | Postcondition(s)
 `send(dest, data)` | <ol> <li> `dest` is a valid IPv6 address, given as type `str` </li> <li> `data` is either of type `str` or `bytearray` </li> </ol> | <ol> <li> `data` is sent to the given `dest` address if reachable </li> <li> An exception is raised if the socket timeouts, or, if the address is unreachable </li> </ol>
 `Sever()` | <ol> <li> Port 4905 is free </li> </ol> | <ol> <li> A `Server` type object is returned </li> <li> Port 4905 is bound </li> </ol>
 `Server.setup()` | <ol> <li> Port 4905 is free </li> <li> The Server object is not currently setup | <ol> <li> Port 4905 is bound </li> </ol>
-`Server.teardown()` | None | <ol> <li> `Server.serversocket` is unbound </li> </ol>
+`Server.teardown()` | n/a | <ol> <li> `Server.serversocket` is unbound </li> </ol>
 `Server.receive()` | <ol> <li> Server is setup </li> </ol> | <ol> <li> The received data is returned as type `bytearray` </li> </ol>
 
 
@@ -183,10 +183,25 @@ Function Call | Precondition(s) | Postcondition(s)
 ## aestools.py
 Contains three functions that are used by `ca.py` and `encryptiontool.py`, `key = aestools.generateKey()` which returns a 16 byte random key to use for AES encryption. The other two functions `data = aestools.encryptAES(data, key)` and `data = aestools.decryptAES(data, key)` both do exactly as the name implies. Encrypt takes unencrypted data and an AES key and returns encrypted data, the other takes encrypted data and a key to return usable data.
 
+The full set of function calls for the aestools library can be found below. It should be noted *additional* exceptions may be raised if the preconditions are not met.
+
+Function Call | Precondition(s) | Postcondition(s)
+--------------|-----------------|-----------------
+... | ... | ...
+... | ... | ...
+... | ... | ...
+
 
 ## rsatools.py
 Contains three functions that are used by `ca.py` and `encryptiontool.py`, `rsatools.generateKey()` which saves both a full key pair and a public key to a specific directory (currently the current directory). The other two functions `data = rsatools.encryptRSA(data, key)` and `data = rsatools.decryptRSA(data, key)` both do exactly as the name implies. Encrypt takes unencrypted data and an public RSA key and returns encrypted data, the other takes encrypted data and a private RSA key to return usable data.
 
+The full set of function calls for the rsatools library can be found below. It should be noted *additional* exceptions may be raised if the preconditions are not met.
+
+Function Call | Precondition(s) | Postcondition(s)
+--------------|-----------------|-----------------
+... | ... | ...
+... | ... | ...
+... | ... | ...
 
 ## encryptiontool.py
-TODO
+TODO @argRobertson
