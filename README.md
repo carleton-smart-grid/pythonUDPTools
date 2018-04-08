@@ -3,33 +3,8 @@ The **smartgrid-comms** repository contains all the code, scripts, and other res
 
 All programs written operate on port 4907. Please ensure no other application is bound to that port *before* running anything.
 
-```
-└── .
-    ├──cliReporter
-    |   └── cliReporter.py
-    |
-    ├── mesh-comms
-    |   ├── packer.py
-    |   ├── tcpcomms.py
-    |   ├── ta.py
-    |   ├── ca.py
-    |   ├── encryptiontool.py
-    |   ├── aestools.py
-    |   ├── rsatools.py
-    |   └── packet-format.md
-    |
-    ├── startup
-    |   ├── startCA.sh
-    |   ├── startTA.sh
-    |   ├── init.sql
-    |   └── README.md
-    |
-    ├── test-util
-    |   └── udpping.py
-    |
-    ├── README.md
-    └── useful-cmds.md
-```
+![UML representation of the main communications software](uml.png)
+
 ## Directory: mesh-comms
 The `mesh-comms` directory contains all the relative code/scripts to send, encrypt, pack/unpack, and receive usage data using TCP data transfer. It also contains the main runnables for the **TA** and **CA stub**.
 
