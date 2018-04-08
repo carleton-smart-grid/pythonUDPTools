@@ -5,6 +5,8 @@ All programs written operate on port 4907. Please ensure no other application is
 
 ![UML representation of the main communications software](uml.png)
 
+
+
 ## Directory: mesh-comms
 The `mesh-comms` directory contains all the relative code/scripts to send, encrypt, pack/unpack, and receive usage data using TCP data transfer. It also contains the main runnables for the **TA** and **CA stub**.
 
@@ -59,12 +61,12 @@ sudo python3 ca.py -v -c -h 1 -r 5 -t 10 -a dead:beef::1
 ## ta.py
 This program provides full TA functionality for the node. This program should only be run on the designated DODAG node of the system (normally IPv6 address dead:beef::1 by convention). The program is generally executed as:
 ```
-sudo python3 ta.py -e -d [D]
+sudo python3 ta.py -e -d [DB]
 ```
 | CLI Parameters | Description |
 |----------------|-------------|
 | `-e` | Enable AES encryption on packets |
-| `-d` | Relative path from the calling directory to the SQLite3 database containing the `usages` table, in which the TA will store received usage data
+| `-d [DB]` | Relative path from the calling directory to the SQLite3 database containing the `usages` table, in which the TA will store received usage data
 
 If not explicitly set using the CLI parameters, the database used is set to `dat/power-usages.db` (relative to the directory `ta.py` is called from). The sqlite3 database used by the TA **must** contain a table entitled "usages" which conforms to a predefined schema, given in [init.sql](https://github.com/carleton-smart-grid/smartgrid-comms/blob/master/startup/init.sql). Initial setup of the database can be done trivially using the provide `init.sql` file, given as:
 ```
@@ -148,7 +150,7 @@ Function Call | Precondition(s) | Postcondition(s)
 `pack(xmlContents)` | <ol> <li> `xmlContents` is given as type `str` </li> <li> `xmlContents` matches the expected XML tag/attribute/element structure, refer to [packet-format.md](https://github.com/carleton-smart-grid/smartgrid-comms/blob/master/mesh-comms/packet-format.md) </li> </ol> | <ol> <li> Returns the contents of `xmlContents` as a valid IMF of type `bytearray` (length of 14 bytes) </li> </ol>
 `unpack(packetContents)` | <ol> <li> `packetContents` is a valid IMF of type `bytearray`, and is the expected length of 14 Bytes </li> <li> `packetContents` is of type `str` and matches the expect XML tag/attribute/element structure </li> </ol> | <ol> <li> Returns an XML formated representation of `packetContents` of type `str` (if `packetContents` was given as an XML, merely returns `packetContents`) </li> <li> Throws `indexException` if `packetContents` is not expected length of 14 Bytes AND `packetContents` is of type `bytearray` </li> <li> Throws `xml.etree.ElementTree.ParseError` if `packetContents` is not a valid XML AND `packetContents` is of type `str` </li> </ol>
 `floatToBytes(num)` | <ol> <li> `num` is of type `float` </li> </ol> | <ol> <li> Returns an IEEE-754 floating point encoded as type `bytearray`, of length 4 </li> <li> Returned `bytearray` is encoded using *little endian* schema (LSB at 0) </li> </ol>
-`bytesToFloat(bytes)` | <ol> <li> `bytes` is of type `bytearray` with a length of 4 <li> <li> `bytes` is an IEEE-754 floating point encoded as little endian (LSB at 0) </li> </ol> | <ol> <li> Returns a `float` type representation </li> </ol>
+`bytesToFloat(bytes)` | <ol> <li> `bytes` is of type `bytearray` with a length of 4 </li> <li> `bytes` is an IEEE-754 floating point encoded as little endian (LSB at 0) </li> </ol> | <ol> <li> Returns a `float` type representation </li> </ol>
 `intToBits(num, minLength)` | <ol> <li> `num` and `minLength` are of type `int` </li> </ol> | <ol> <li> Returns type `str` equal to `num` as a binary string (ie a string of only 1 and 0 characters) </li> <li> Returned string is guaranteed to be at least `minLength` in length. Resulting string will be 0 padded to satisfy this condition </li> </ol>
 `bytesToInt(bytes)` | <ol> <li> `bytes` of of type `bytearray` or `bytes` </li> <li> `bytes` is encoded using little endian schema (LSB at 0)</li> </ol> | <ol> <li> Returns type `int` equal to the value of all entries in `bytes` read as one unsigned integer </li> </ol>
 `printableByteArray(arr)` | <ol> <li> `arr` is given as type `bytearray` </li> </ol> | <ol> <li> Returns a human-readable string (type `str`) of the hex values in `arr` (ie 0x03 0xF3 0x4D) </li> </ol>
