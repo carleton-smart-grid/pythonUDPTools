@@ -5,11 +5,18 @@
 import socket
 import sys
 
-# declaring constants
+# declaring variables/constants
 PORT = 4907
 HOST = ''
 BUFFER = 1024
 TIMEOUT_SEC = 15
+verbose = True
+
+
+# what it says on the tin
+def printv(s):
+    if (verbose):
+        print(s)
 
 
 # send a data string to destination, given as string OR bytearray
@@ -17,7 +24,7 @@ TIMEOUT_SEC = 15
 def send(dest, data):
     try:
         # socket setup
-        print('Establishing connection...')
+        printv('Establishing connection...')
         scope_id = socket.if_nametoindex('lowpan0')
         #scope_id = socket.AF_INET
         sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
@@ -27,18 +34,18 @@ def send(dest, data):
 
 
         # send
-        print('Sending data...')
+        printv('Sending data...')
         if (isinstance(data, str)):
             data = data.encode()
         sock.send(data)
-        print('Data sent!')
+        printv('Data sent!')
     # catches all socket errors
     except socket.error:
         # Raises the timeout error to the ca.py scope
         raise
     finally:
         sock.close()
-        print('Socket closed!')
+        printv('Socket closed!')
 
 
 # Solve the little problem of variable scope on imports
@@ -46,16 +53,18 @@ def send(dest, data):
 class Server:
     # declaring local instance variables
     serverSocket = None
+
+
     # generic constructor
     def __init__(self):
-        print('Server startup...')
+        printv('Server startup...')
         self.setup()
         serverSocket = None
 
 
     # generic destructor
     def __del__(self):
-        print('Server shutdown...')
+        printv('Server shutdown...')
         self.teardown()
         serverSocket = None
 
@@ -63,14 +72,14 @@ class Server:
     # setup server socket for regular comms
     def setup(self):
         # socket setup
-        print('Binding Socket on port', PORT, '...')
+        printv('Binding Socket on port', PORT, '...')
         scope_id = socket.if_nametoindex('lowpan0')
         # scope_id = socket.AF_INET
         self.serverSocket = socket.socket(socket.AF_INET6, socket.SOCK_STREAM, 0)
         self.serverSocket.bind((HOST, PORT, 0, scope_id))
         #self.serverSocket.bind((HOST, PORT))
         self.serverSocket.listen(1)
-        print('Socket bind complete!')
+        printv('Socket bind complete!')
 
 
     # properly terminate server
@@ -85,9 +94,9 @@ class Server:
     # returns 'bytearray' type of recieved data
     def receive(self):
         # wait for connection
-        print('Waiting for connection...')
+        printv('Waiting for connection...')
         connection, src = self.serverSocket.accept()
-        print('Connection with:', src)
+        printv('Connection with:', src)
 
         # get all data
         data = bytearray()
@@ -95,11 +104,11 @@ class Server:
             payload = connection.recv(BUFFER)
             if (not payload):
                 break
-            print('Receieved', len(payload), 'Byte(s)...')
+            printv('Receieved', len(payload), 'Byte(s)...')
             data.extend(payload)
 
         # close current connection and returns a tuple with the data and IP address
-        print('Total:', len(data), 'Byte(s)')
-        print('Closing connection with:', src)
+        printv('Total:', len(data), 'Byte(s)')
+        printv('Closing connection with:', src)
         connection.close()
         return (data, src[0])
