@@ -4,9 +4,11 @@
 
 
 # import external libraries
+import signal
 import xml.etree.ElementTree as et
 import sqlite3
 import sys
+# import exception
 
 # import local py
 import tcpcomms
@@ -19,11 +21,32 @@ RSA_PACKET = 256
 VALID_PACKET = 16
 DEFAULT_DB_PATH = 'dat/power-usages.db'
 
+###############################################################################
+# GRACEFUL SIGNAL HANDLING
+###############################################################################
+class Killer: 
+    die = False
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.terminate)
+        signal.signal(signal.SIGTERM, self.terminate)
+        signal.signal(signal.SIGQUIT, self.quit)
+
+    def terminate(self, signum, frame):
+        printv("Terminate caught " + str(signum))
+        self.die = True;
+        raise InterruptedError
+
+    def quit(self, signum, frame):
+        printv("Quit caught " + str(signum))
+        raise InterruptedError
 
 
 ###############################################################################
 # DECLARING FUNCTIONS
 ###############################################################################
+def printv(string):
+    if verbose:
+        print(string)
 
 # save xml data to database
 def write(xml, curser, connection):
@@ -67,6 +90,8 @@ def write(xml, curser, connection):
 # initialize parameters to default
 dbPath = DEFAULT_DB_PATH
 encryptOn = False
+verbose = False
+killer = Killer()
 
 # check for flags
 flags = sys.argv
@@ -78,6 +103,8 @@ while (len(flags) > 0):
         dbPath = str(flags.pop(0))
     elif (flag == '-e'):
         encryptOn = True
+    elif (flag == '-v'):
+        verbose = True
 
 # setup server object
 server = tcpcomms.Server()
@@ -91,9 +118,14 @@ if(encryptOn):
     tool = encryptiontool.SecurityTool()
 
 # receive-unpack-write loop
-while(True):
+while(killer.die != True):
     # receive and unpack data
-    packet = server.receive()
+    try:
+        packet = server.receive()
+    except InterruptedError:
+        print("Interrupted socket receive, continuing") # This is an error and as such is printed regardless of verbosity
+        continue
+
     #if the packet is an RSA encrypted AES key
     if(len(packet[0]) == RSA_PACKET and encryptOn):
         tool.addAesKey(packet)
@@ -106,8 +138,13 @@ while(True):
     try:
         data = packer.unpack(data)
     except Exception as err:
-        print('IMF unpack error: ', err)
+        print('IMF unpack error: ', err)  # This is an error and as such is printed regardless of verbosity
         continue
 
     #save to SQLite3 server
     write(data, curser, connection)
+
+
+# Cleanup - any future cleanup can go here.
+del(server) # This doesn't necessarily have to be done, but it doesn't hurt.
+print("Exiting")

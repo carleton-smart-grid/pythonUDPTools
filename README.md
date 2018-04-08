@@ -56,15 +56,19 @@ General Usage:
 sudo python3 ca.py -v -c -h 1 -r 5 -t 10 -a dead:beef::1
 ```
 
+
 ## ta.py
 This program provides full TA functionality for the node. This program should only be run on the designated DODAG node of the system (normally IPv6 address dead:beef::1 by convention). The program is generally executed as:
 ```
-sudo python3 ta.py -e -d [D]
+sudo python3 ta.py -v -e -d [D]
 ```
 | CLI Parameters | Description |
 |----------------|-------------|
+| `-v` | Enable verbose mode |
 | `-e` | Enable AES encryption on packets |
-| `-d` | Relative path from the calling directory to the SQLite3 database containing the `usages` table, in which the TA will store received usage data
+| `-d [DB]` | Relative path from the calling directory to the SQLite3 database containing the `usages` table, in which the TA will store received usage data
+
+Ta.py handles interrupts gracefully, SIGKILL (2, ^C) will kill the program and close any open sockets. SIGQUIT (3, ^\\) will break the current iteration of the loop, this is useful for when SYNACKs are lost in the mesh and the receive socket livelocks (this appears to be a TCP 'bug' of sorts). Of course, any data currently in the socket will be lost.
 
 If not explicitly set using the CLI parameters, the database used is set to `dat/power-usages.db` (relative to the directory `ta.py` is called from). The sqlite3 database used by the TA **must** contain a table entitled "usages" which conforms to a predefined schema, given in [init.sql](https://github.com/carleton-smart-grid/smartgrid-comms/blob/master/startup/init.sql). Initial setup of the database can be done trivially using the provide `init.sql` file, given as:
 ```
@@ -86,6 +90,7 @@ Where `IID` is the partial IPv6 address of the node, specifically the section af
 ```
 sudo python cliReporter.py 0:1:2:3 192.168.1.50
 ```
+
 
 
 ## udpping.py
@@ -180,3 +185,9 @@ Function Call | Precondition(s) | Postcondition(s)
 
 ## encryptiontool.py
 TODO @argRobertson
+
+Function Call | Precondition(s) | Postcondition(s)
+--------------|-----------------|-----------------
+... | ... | ...
+... | ... | ...
+... | ... | ...
