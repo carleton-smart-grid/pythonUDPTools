@@ -97,6 +97,7 @@ while(True):
     #if the packet is an RSA encrypted AES key
     if(len(packet[0]) == RSA_PACKET and encryptOn):
         tool.addAesKey(packet)
+        continue
     elif(len(packet[0]) == VALID_PACKET and encryptOn):
         #decrypt the data and attempt to unpack it
         data = tool.decryptAESData(packet)

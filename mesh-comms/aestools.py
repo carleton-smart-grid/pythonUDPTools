@@ -23,7 +23,7 @@ def encryptAES( data, key):
 
     cipher = AES.new(key, AES.MODE_ECB)
     data = data + b'00'
-    encryptedData = cipher.encrypt(data)
+    encryptedData = cipher.encrypt(bytes(data))
     return encryptedData
 
 #decrypts using the AES key, removing padding before returning
